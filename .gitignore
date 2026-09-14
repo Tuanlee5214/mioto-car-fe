@@ -1,0 +1,57 @@
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+# Diagnostic reports (https://nodejs.org/api/report.html)
+report.[0-9]*.[0-9]*.[0-9]*.[0-9]*.json
+
+# Dependency directories (Cực kỳ quan trọng: không push node_modules)
+node_modules/
+jspm_packages/
+
+# Snowpack dependency directory (https://snowpack.dev/)
+web_modules/
+
+# TypeScript cache
+*.tsbuildinfo
+
+# Build / Output directories (Thư mục chứa code đã biên dịch)
+dist/
+dist-ssr/
+build/
+*.local
+
+# Environment variables (Bảo mật: chứa API key, secret key...)
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Editor / IDE settings (Cấu hình riêng của máy cá nhân)
+.vscode/*
+!.vscode/extensions.json
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# Operating System files (File rác hệ thống Ubuntu / MacOS / Windows)
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+Desktop.ini
+
+# Vite specific
+*.local
