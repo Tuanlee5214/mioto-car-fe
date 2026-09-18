@@ -11,12 +11,17 @@
   color: #374151;
 }
 
+.input-field__wrapper {
+  position: relative;
+  width: 100%;
+}
+
 .input-field input {
   width: 100%;
   box-sizing: border-box;
   border: 1px solid #d8dee6;
   border-radius: 12px;
-  padding: 14px 16px;
+  padding: 14px 46px 14px 16px;
   font: inherit;
   color: #111827;
   background: #f9fafb;
@@ -27,4 +32,29 @@
   outline: none;
   border-color: #0f766e;
   box-shadow: 0 0 0 4px rgba(15, 118, 110, 0.1);
+}
+
+.input-field__toggle {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  border: none;
+  background: transparent;
+  color: #4b5563;
+  cursor: pointer;
+  padding: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.input-field__toggle svg {
+  width: 20px;
+  height: 20px;
+  stroke: currentColor;
+  stroke-width: 2;
+  fill: none;
+  stroke-linecap: round;
+  stroke-linejoin: round;
 }

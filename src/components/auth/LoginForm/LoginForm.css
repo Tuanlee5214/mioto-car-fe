@@ -7,6 +7,25 @@
   padding: 32px;
 }
 
+.social-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 56px;
+  padding: 10px 16px;
+  border-radius: 14px;
+  border: 1px solid #dfe3e8;
+  background: #f7f7f7;
+  font-size: 0.98rem;
+  font-weight: 600;
+}
+
+.social-button .google-icon {
+  width: 24px;
+  height: 24px;
+}
+
 .login-card__header {
   margin-bottom: 24px;
   text-align: center;
