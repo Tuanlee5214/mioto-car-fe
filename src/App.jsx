@@ -1,14 +1,16 @@
-import { useState } from 'react'
+import { Navigate, Route, Routes } from 'react-router-dom'
 import LoginPage from './pages/LoginPage/LoginPage'
 import SignUpPage from './pages/SignUpPage/SignUpPage'
+import HomePage from './pages/HomePage/HomePage'
 
 function App() {
-  const [currentPage, setCurrentPage] = useState('login')
-
-  return currentPage === 'login' ? (
-    <LoginPage onNavigateToSignUp={() => setCurrentPage('signup')} />
-  ) : (
-    <SignUpPage onNavigateToLogin={() => setCurrentPage('login')} />
+  return (
+    <Routes>
+      <Route path="/" element={<LoginPage />} />
+      <Route path="/signup" element={<SignUpPage />} />
+      <Route path="/home" element={<HomePage />} />
+      <Route path="*" element={<Navigate to="/" replace />} />
+    </Routes>
   )
 }
 

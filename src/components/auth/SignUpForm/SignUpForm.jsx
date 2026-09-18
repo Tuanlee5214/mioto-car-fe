@@ -1,10 +1,13 @@
 import { useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import Button from '../../ui/Button/Button'
 import InputField from '../../ui/InputField/InputField'
 import { validateSignUpForm } from '../../../utils/validation'
 import './SignUpForm.css'
 
-function SignUpForm({ onNavigateToLogin }) {
+function SignUpForm() {
+  const navigate = useNavigate()
+
   const [form, setForm] = useState({
     phone: '',
     password: '',
@@ -150,7 +153,7 @@ function SignUpForm({ onNavigateToLogin }) {
 
       <p className="signup-text">
         Đã có tài khoản?{' '}
-        <button type="button" className="text-link-btn" onClick={onNavigateToLogin}>
+        <button type="button" className="text-link-btn" onClick={() => navigate('/')}>
           Đăng nhập
         </button>
       </p>

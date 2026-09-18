@@ -106,6 +106,27 @@
   color: #4b5563;
 }
 
+.field-error {
+  display: block;
+  color: #dc2626;
+  font-size: 0.82rem;
+  font-weight: 600;
+  margin-top: -8px;
+  margin-bottom: 2px;
+  text-align: left;
+  line-height: 1.4;
+}
+
+.login-form__api-error {
+  color: #dc2626;
+  font-size: 0.9rem;
+  font-weight: 700;
+  text-align: center;
+  margin-top: -4px;
+  margin-bottom: 6px;
+  line-height: 1.5;
+}
+
 @media (max-width: 820px) {
   .login-card {
     padding: 26px 20px;
