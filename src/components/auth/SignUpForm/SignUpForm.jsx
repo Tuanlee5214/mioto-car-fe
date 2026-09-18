@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import Button from '../../ui/Button/Button'
 import InputField from '../../ui/InputField/InputField'
+import { validateSignUpForm } from '../../../utils/validation'
 import './SignUpForm.css'
 
 function SignUpForm({ onNavigateToLogin }) {
@@ -11,23 +12,30 @@ function SignUpForm({ onNavigateToLogin }) {
     displayName: '',
     email: '',
   })
+  const [errors, setErrors] = useState({})
+  const [isSubmitted, setIsSubmitted] = useState(false)
   const [showPassword, setShowPassword] = useState(false)
   const [showConfirmPassword, setShowConfirmPassword] = useState(false)
 
   const handleChange = (event) => {
     const { name, value } = event.target
-
-    setForm((prev) => ({
-      ...prev,
+    const nextForm = {
+      ...form,
       [name]: value,
-    }))
+    }
+
+    setForm(nextForm)
+    setErrors(validateSignUpForm(nextForm))
   }
 
   const handleSubmit = (event) => {
     event.preventDefault()
+    setIsSubmitted(true)
 
-    if (form.password !== form.confirmPassword) {
-      alert('Mật khẩu xác nhận không khớp với mật khẩu đã nhập.')
+    const nextErrors = validateSignUpForm(form)
+    setErrors(nextErrors)
+
+    if (Object.keys(nextErrors).length > 0) {
       return
     }
 
@@ -51,6 +59,7 @@ function SignUpForm({ onNavigateToLogin }) {
           value={form.phone}
           onChange={handleChange}
         />
+        {(isSubmitted || form.phone) && errors.phone && <span className="field-error">{errors.phone}</span>}
 
         <InputField
           label="Tên hiển thị"
@@ -61,6 +70,7 @@ function SignUpForm({ onNavigateToLogin }) {
           value={form.displayName}
           onChange={handleChange}
         />
+        {(isSubmitted || form.displayName) && errors.displayName && <span className="field-error">{errors.displayName}</span>}
 
         <InputField
           label="Email"
@@ -71,6 +81,7 @@ function SignUpForm({ onNavigateToLogin }) {
           value={form.email}
           onChange={handleChange}
         />
+        {(isSubmitted || form.email) && errors.email && <span className="field-error">{errors.email}</span>}
 
         <InputField
           label="Mật khẩu"
@@ -101,6 +112,7 @@ function SignUpForm({ onNavigateToLogin }) {
             )}
           </button>
         </InputField>
+        {(isSubmitted || form.password) && errors.password && <span className="field-error">{errors.password}</span>}
 
         <InputField
           label="Xác nhận mật khẩu"
@@ -131,6 +143,7 @@ function SignUpForm({ onNavigateToLogin }) {
             )}
           </button>
         </InputField>
+        {(isSubmitted || form.confirmPassword) && errors.confirmPassword && <span className="field-error">{errors.confirmPassword}</span>}
 
         <Button type="submit">Tạo tài khoản</Button>
       </form>

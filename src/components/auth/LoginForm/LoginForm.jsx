@@ -2,6 +2,7 @@ import { useState } from 'react'
 import Button from '../../ui/Button/Button'
 import InputField from '../../ui/InputField/InputField'
 import GoogleIcon from '../../ui/GoogleIcon/GoogleIcon'
+import { validateLoginForm } from '../../../utils/validation'
 import './LoginForm.css'
 
 function LoginForm({ onNavigateToSignUp }) {
@@ -10,19 +11,32 @@ function LoginForm({ onNavigateToSignUp }) {
     password: '',
     remember: true,
   })
+  const [errors, setErrors] = useState({})
+  const [isSubmitted, setIsSubmitted] = useState(false)
   const [showPassword, setShowPassword] = useState(false)
 
   const handleChange = (event) => {
     const { name, value, type, checked } = event.target
-
-    setForm((prev) => ({
-      ...prev,
+    const nextForm = {
+      ...form,
       [name]: type === 'checkbox' ? checked : value,
-    }))
+    }
+
+    setForm(nextForm)
+    setErrors(validateLoginForm(nextForm))
   }
 
   const handleSubmit = (event) => {
     event.preventDefault()
+    setIsSubmitted(true)
+
+    const nextErrors = validateLoginForm(form)
+    setErrors(nextErrors)
+
+    if (Object.keys(nextErrors).length > 0) {
+      return
+    }
+
     console.log('Login submitted:', form)
   }
 
@@ -43,6 +57,7 @@ function LoginForm({ onNavigateToSignUp }) {
           value={form.phone}
           onChange={handleChange}
         />
+        {(isSubmitted || form.phone) && errors.phone && <span className="field-error">{errors.phone}</span>}
 
         <InputField
           label="Mật khẩu"
@@ -73,6 +88,7 @@ function LoginForm({ onNavigateToSignUp }) {
             )}
           </button>
         </InputField>
+        {(isSubmitted || form.password) && errors.password && <span className="field-error">{errors.password}</span>}
 
         <div className="login-form__meta">
           <label className="checkbox">
