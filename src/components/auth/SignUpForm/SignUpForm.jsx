@@ -7,10 +7,12 @@ function SignUpForm({ onNavigateToLogin }) {
   const [form, setForm] = useState({
     phone: '',
     password: '',
+    confirmPassword: '',
     displayName: '',
     email: '',
   })
   const [showPassword, setShowPassword] = useState(false)
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false)
 
   const handleChange = (event) => {
     const { name, value } = event.target
@@ -23,6 +25,12 @@ function SignUpForm({ onNavigateToLogin }) {
 
   const handleSubmit = (event) => {
     event.preventDefault()
+
+    if (form.password !== form.confirmPassword) {
+      alert('Mật khẩu xác nhận không khớp với mật khẩu đã nhập.')
+      return
+    }
+
     console.log('Sign up submitted:', form)
   }
 
@@ -80,6 +88,36 @@ function SignUpForm({ onNavigateToLogin }) {
             aria-label={showPassword ? 'Ẩn mật khẩu' : 'Hiện mật khẩu'}
           >
             {showPassword ? (
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M2 12s3.5-6 10-6 10 6 10 6-3.5 6-10 6S2 12 2 12Z" />
+                <circle cx="12" cy="12" r="3" />
+              </svg>
+            ) : (
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M2 12s3.5-6 10-6 10 6 10 6-3.5 6-10 6S2 12 2 12Z" />
+                <circle cx="12" cy="12" r="3" />
+                <path d="M3 3l18 18" />
+              </svg>
+            )}
+          </button>
+        </InputField>
+
+        <InputField
+          label="Xác nhận mật khẩu"
+          type={showConfirmPassword ? 'text' : 'password'}
+          name="confirmPassword"
+          placeholder="Nhập lại mật khẩu"
+          autoComplete="new-password"
+          value={form.confirmPassword}
+          onChange={handleChange}
+        >
+          <button
+            type="button"
+            className="input-field__toggle"
+            onClick={() => setShowConfirmPassword((prev) => !prev)}
+            aria-label={showConfirmPassword ? 'Ẩn mật khẩu xác nhận' : 'Hiện mật khẩu xác nhận'}
+          >
+            {showConfirmPassword ? (
               <svg viewBox="0 0 24 24" aria-hidden="true">
                 <path d="M2 12s3.5-6 10-6 10 6 10 6-3.5 6-10 6S2 12 2 12Z" />
                 <circle cx="12" cy="12" r="3" />

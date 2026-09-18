@@ -1,4 +1,4 @@
-import SignUpForm from '../../components/auth/SignUpForm/SignUpForm'
+                                                                                                                                                                                                                                                                                                                                                            import SignUpForm from '../../components/auth/SignUpForm/SignUpForm'
 import LoginHero from '../../components/auth/LoginHero/LoginHero'
 import './SignUpPage.css'
 
