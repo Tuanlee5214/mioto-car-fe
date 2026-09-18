@@ -1,14 +1,14 @@
-import SignUpForm from '../../components/auth/SignUpForm/SignUpForm'
+                                                                                                                                                                                                                                                                                                                                                            import SignUpForm from '../../components/auth/SignUpForm/SignUpForm'
 import LoginHero from '../../components/auth/LoginHero/LoginHero'
 import './SignUpPage.css'
 
-function SignUpPage({ onNavigateToLogin }) {
+function SignUpPage() {
   return (
     <div className="login-page">
       <LoginHero />
 
       <div className="login-panel">
-        <SignUpForm onNavigateToLogin={onNavigateToLogin} />
+        <SignUpForm />
       </div>
     </div>
   )
