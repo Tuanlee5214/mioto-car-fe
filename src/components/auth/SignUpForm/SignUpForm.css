@@ -1,0 +1,13 @@
+.sign-up-card {
+  width: min(100%, 470px);
+}
+
+.text-link-btn {
+  border: none;
+  background: transparent;
+  color: #0f766e;
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+  padding: 0;
+}

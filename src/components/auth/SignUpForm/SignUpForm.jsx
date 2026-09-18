@@ -1,36 +1,36 @@
 import { useState } from 'react'
 import Button from '../../ui/Button/Button'
 import InputField from '../../ui/InputField/InputField'
-import GoogleIcon from '../../ui/GoogleIcon/GoogleIcon'
-import './LoginForm.css'
+import './SignUpForm.css'
 
-function LoginForm({ onNavigateToSignUp }) {
+function SignUpForm({ onNavigateToLogin }) {
   const [form, setForm] = useState({
     phone: '',
     password: '',
-    remember: true,
+    displayName: '',
+    email: '',
   })
   const [showPassword, setShowPassword] = useState(false)
 
   const handleChange = (event) => {
-    const { name, value, type, checked } = event.target
+    const { name, value } = event.target
 
     setForm((prev) => ({
       ...prev,
-      [name]: type === 'checkbox' ? checked : value,
+      [name]: value,
     }))
   }
 
   const handleSubmit = (event) => {
     event.preventDefault()
-    console.log('Login submitted:', form)
+    console.log('Sign up submitted:', form)
   }
 
   return (
-    <div className="login-card">
+    <div className="login-card sign-up-card">
       <div className="login-card__header">
         <span className="eyebrow">Chào mừng</span>
-        <h2>Đăng nhập</h2>
+        <h2>Đăng ký</h2>
       </div>
 
       <form className="login-form" onSubmit={handleSubmit}>
@@ -45,11 +45,31 @@ function LoginForm({ onNavigateToSignUp }) {
         />
 
         <InputField
+          label="Tên hiển thị"
+          type="text"
+          name="displayName"
+          placeholder="Nguyễn Văn A"
+          autoComplete="name"
+          value={form.displayName}
+          onChange={handleChange}
+        />
+
+        <InputField
+          label="Email"
+          type="email"
+          name="email"
+          placeholder="you@example.com"
+          autoComplete="email"
+          value={form.email}
+          onChange={handleChange}
+        />
+
+        <InputField
           label="Mật khẩu"
           type={showPassword ? 'text' : 'password'}
           name="password"
           placeholder="Nhập mật khẩu của bạn"
-          autoComplete="current-password"
+          autoComplete="new-password"
           value={form.password}
           onChange={handleChange}
         >
@@ -74,42 +94,17 @@ function LoginForm({ onNavigateToSignUp }) {
           </button>
         </InputField>
 
-        <div className="login-form__meta">
-          <label className="checkbox">
-            <input
-              type="checkbox"
-              name="remember"
-              checked={form.remember}
-              onChange={handleChange}
-            />
-            <span>Ghi nhớ tôi</span>
-          </label>
-
-          <a href="#" className="text-link">
-            Quên mật khẩu?
-          </a>
-        </div>
-
-        <Button type="submit">Đăng nhập</Button>
+        <Button type="submit">Tạo tài khoản</Button>
       </form>
 
-      <div className="divider">
-        <span>hoặc</span>
-      </div>
-
-      <Button variant="secondary" type="button" className="social-button">
-        <GoogleIcon />
-        Tiếp tục với Google
-      </Button>
-
       <p className="signup-text">
-        Chưa có tài khoản?{' '}
-        <button type="button" className="text-link-btn" onClick={onNavigateToSignUp}>
-          Tạo tài khoản
+        Đã có tài khoản?{' '}
+        <button type="button" className="text-link-btn" onClick={onNavigateToLogin}>
+          Đăng nhập
         </button>
       </p>
     </div>
   )
 }
 
-export default LoginForm
+export default SignUpForm
