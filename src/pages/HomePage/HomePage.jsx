@@ -1,7 +1,7 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { getCurrentUser, logoutUser } from '../../services/authService'
-import { getMyProfile } from '../../services/userService'
+import { getMyProfile, updateMyProfile } from '../../services/userService'
 import './HomePage.css'
 
 function HomePage() {
@@ -11,6 +11,21 @@ function HomePage() {
   const [profile, setProfile] = useState(null)
   const [profileLoading, setProfileLoading] = useState(false)
   const [profileError, setProfileError] = useState('')
+  const [isEditing, setIsEditing] = useState(false)
+  const [form, setForm] = useState({ email: '', displayName: '' })
+  const [saveLoading, setSaveLoading] = useState(false)
+  const [fieldErrors, setFieldErrors] = useState({ email: '', displayName: '' })
+  const [toast, setToast] = useState({ type: '', message: '' })
+
+  useEffect(() => {
+    if (!toast.message) return undefined
+
+    const timer = setTimeout(() => {
+      setToast({ type: '', message: '' })
+    }, 2500)
+
+    return () => clearTimeout(timer)
+  }, [toast.message])
 
   const handleLogout = async () => {
     setLoading(true)
@@ -36,17 +51,26 @@ function HomePage() {
     if (profile) {
       setProfile(null)
       setProfileError('')
+      setIsEditing(false)
+      setToast({ type: '', message: '' })
       return
     }
 
     setProfileLoading(true)
     setProfileError('')
+    setToast({ type: '', message: '' })
 
     try {
       const result = await getMyProfile()
 
       if (result.success) {
-        setProfile(result.data)
+        const nextProfile = result.data || {}
+        setProfile(nextProfile)
+        setForm({
+          email: nextProfile.email || '',
+          displayName: nextProfile.displayName || '',
+        })
+        setIsEditing(false)
         return
       }
 
@@ -55,6 +79,97 @@ function HomePage() {
       setProfileError('Không thể kết nối máy chủ, vui lòng thử lại.')
     } finally {
       setProfileLoading(false)
+    }
+  }
+
+  const handleEditClick = () => {
+    if (!profile) return
+    setForm({
+      email: profile.email || '',
+      displayName: profile.displayName || '',
+    })
+    setFieldErrors({ email: '', displayName: '' })
+    setToast({ type: '', message: '' })
+    setIsEditing(true)
+  }
+
+  const validateProfileForm = (nextForm) => {
+    const nextErrors = {
+      email: '',
+      displayName: '',
+    }
+
+    if (!nextForm.displayName || !nextForm.displayName.trim()) {
+      nextErrors.displayName = 'Tên hiển thị không được để trống.'
+    }
+
+    if (!nextForm.email || !nextForm.email.trim()) {
+      nextErrors.email = 'Email không được để trống.'
+    } else {
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+      if (!emailRegex.test(nextForm.email.trim())) {
+        nextErrors.email = 'Email không đúng định dạng.'
+      }
+    }
+
+    return nextErrors
+  }
+
+  const handleFormChange = (event) => {
+    const { name, value } = event.target
+    const nextForm = {
+      ...form,
+      [name]: value,
+    }
+
+    setForm(nextForm)
+    setFieldErrors(validateProfileForm(nextForm))
+  }
+
+  const handleSaveProfile = async () => {
+    const nextErrors = validateProfileForm(form)
+    setFieldErrors(nextErrors)
+
+    if (nextErrors.email || nextErrors.displayName) {
+      setToast({
+        type: 'error',
+        message: nextErrors.email || nextErrors.displayName,
+      })
+      return
+    }
+
+    setSaveLoading(true)
+    setProfileError('')
+
+    try {
+      const result = await updateMyProfile(form)
+
+      if (result.success) {
+        const nextProfile = result.data || {}
+        setProfile(nextProfile)
+        setForm({
+          email: nextProfile.email || '',
+          displayName: nextProfile.displayName || '',
+        })
+        setIsEditing(false)
+        setToast({
+          type: 'success',
+          message: 'Cập nhật thông tin thành công.',
+        })
+        return
+      }
+
+      setToast({
+        type: 'error',
+        message: result.message || 'Cập nhật thông tin thất bại.',
+      })
+      setProfileError(result.message)
+    } catch {
+      const message = 'Không thể kết nối máy chủ, vui lòng thử lại.'
+      setToast({ type: 'error', message })
+      setProfileError(message)
+    } finally {
+      setSaveLoading(false)
     }
   }
 
@@ -87,6 +202,12 @@ function HomePage() {
         {profileError && <p className="logout-error">{profileError}</p>}
         {logoutError && <p className="logout-error">{logoutError}</p>}
 
+        {toast.message && (
+          <div className={`toast toast--${toast.type}`} role="alert">
+            {toast.message}
+          </div>
+        )}
+
 
         {profile && (
           <div className="profile-card">
@@ -95,7 +216,18 @@ function HomePage() {
             <div className="profile-header">
               <div>
                 <p className="profile-label">Tên hiển thị</p>
-                <h3>{profile.displayName || 'Người dùng'}</h3>
+                {!isEditing ? (
+                  <h3>{profile.displayName || 'Người dùng'}</h3>
+                ) : (
+                  <input
+                    className="profile-input"
+                    type="text"
+                    name="displayName"
+                    value={form.displayName}
+                    onChange={handleFormChange}
+                  />
+                )}
+                {isEditing && fieldErrors.displayName && <span className="field-error">{fieldErrors.displayName}</span>}
               </div>
               <span className={statusClass}>{statusText}</span>
             </div>
@@ -113,7 +245,18 @@ function HomePage() {
 
               <div className="profile-item">
                 <span className="profile-label">Email</span>
-                <strong>{profile.email || 'N/A'}</strong>
+                {!isEditing ? (
+                  <strong>{profile.email || 'N/A'}</strong>
+                ) : (
+                  <input
+                    className="profile-input"
+                    type="email"
+                    name="email"
+                    value={form.email}
+                    onChange={handleFormChange}
+                  />
+                )}
+                {isEditing && fieldErrors.email && <span className="field-error">{fieldErrors.email}</span>}
               </div>
 
               <div className="profile-item">
@@ -121,6 +264,33 @@ function HomePage() {
                 <strong>{profile.status === 1 ? 'Đang hoạt động' : 'Không hoạt động'}</strong>
               </div>
             </div>
+
+            {!isEditing ? (
+              <button type="button" className="primary-button profile-action" onClick={handleEditClick}>
+                Sửa thông tin
+              </button>
+            ) : (
+              <div className="profile-action-group">
+                <button type="button" className="primary-button" onClick={handleSaveProfile} disabled={saveLoading}>
+                  {saveLoading ? 'Đang lưu...' : 'Lưu'}
+                </button>
+                <button
+                  type="button"
+                  className="secondary-button"
+                  onClick={() => {
+                    setIsEditing(false)
+                    setForm({
+                      email: profile.email || '',
+                      displayName: profile.displayName || '',
+                    })
+                    setFieldErrors({ email: '', displayName: '' })
+                    setToast({ type: '', message: '' })
+                  }}
+                >
+                  Hủy
+                </button>
+              </div>
+            )}
           </div>
         )}
       </div>
