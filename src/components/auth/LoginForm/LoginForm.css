@@ -1,0 +1,99 @@
+.login-card {
+  width: min(100%, 430px);
+  background: rgba(255, 255, 255, 0.96);
+  border: 1px solid #e5e7eb;
+  border-radius: 28px;
+  box-shadow: 0 24px 50px rgba(15, 23, 42, 0.08);
+  padding: 32px;
+}
+
+.login-card__header {
+  margin-bottom: 24px;
+  text-align: center;
+}
+
+.eyebrow {
+  display: inline-block;
+  color: #0f766e;
+  font-size: 0.76rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  margin-bottom: 10px;
+}
+
+.login-card__header h2 {
+  margin: 0;
+  font-size: clamp(2rem, 2.5vw, 2.6rem);
+  color: #111827;
+  letter-spacing: -0.05em;
+}
+
+.login-form {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.login-form__meta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-top: 4px;
+}
+
+.checkbox {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: #4b5563;
+  font-size: 0.9rem;
+}
+
+.checkbox input {
+  accent-color: #0f766e;
+}
+
+.text-link,
+.signup-text a {
+  color: #0f766e;
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.divider {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin: 24px 0 16px;
+  color: #6b7280;
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.divider::before,
+.divider::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: #e5e7eb;
+}
+
+.signup-text {
+  margin-top: 22px;
+  text-align: center;
+  color: #4b5563;
+}
+
+@media (max-width: 820px) {
+  .login-card {
+    padding: 26px 20px;
+  }
+
+  .login-form__meta {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}
