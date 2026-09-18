@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import Button from '../../ui/Button/Button'
 import InputField from '../../ui/InputField/InputField'
 import { validateSignUpForm } from '../../../utils/validation'
+import { signUpUser } from '../../../services/authService'
 import './SignUpForm.css'
 
 function SignUpForm() {
@@ -19,6 +20,8 @@ function SignUpForm() {
   const [isSubmitted, setIsSubmitted] = useState(false)
   const [showPassword, setShowPassword] = useState(false)
   const [showConfirmPassword, setShowConfirmPassword] = useState(false)
+  const [loading, setLoading] = useState(false)
+  const [serverError, setServerError] = useState('')
 
   const handleChange = (event) => {
     const { name, value } = event.target
@@ -29,9 +32,13 @@ function SignUpForm() {
 
     setForm(nextForm)
     setErrors(validateSignUpForm(nextForm))
+
+    if (serverError) {
+      setServerError('')
+    }
   }
 
-  const handleSubmit = (event) => {
+  const handleSubmit = async (event) => {
     event.preventDefault()
     setIsSubmitted(true)
 
@@ -42,7 +49,28 @@ function SignUpForm() {
       return
     }
 
-    console.log('Sign up submitted:', form)
+    setLoading(true)
+    setServerError('')
+
+    try {
+      const result = await signUpUser({
+        phone: form.phone,
+        pwd: form.password,
+        displayName: form.displayName,
+        email: form.email,
+      })
+
+      if (result.success) {
+        navigate('/home')
+        return
+      }
+
+      setServerError(result.message)
+    } catch (error) {
+      setServerError('Không thể kết nối máy chủ, vui lòng thử lại.')
+    } finally {
+      setLoading(false)
+    }
   }
 
   return (
@@ -148,7 +176,11 @@ function SignUpForm() {
         </InputField>
         {(isSubmitted || form.confirmPassword) && errors.confirmPassword && <span className="field-error">{errors.confirmPassword}</span>}
 
-        <Button type="submit">Tạo tài khoản</Button>
+        {serverError && <div className="login-form__api-error">{serverError}</div>}
+
+        <Button type="submit" disabled={loading}>
+          {loading ? 'Đang đăng ký...' : 'Tạo tài khoản'}
+        </Button>
       </form>
 
       <p className="signup-text">
