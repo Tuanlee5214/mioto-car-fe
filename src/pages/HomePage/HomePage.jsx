@@ -1,16 +1,20 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { logoutUser } from '../../services/authService'
+import { getCurrentUser, logoutUser } from '../../services/authService'
+import { getMyProfile } from '../../services/userService'
 import './HomePage.css'
 
 function HomePage() {
   const navigate = useNavigate()
   const [loading, setLoading] = useState(false)
-  const [error, setError] = useState('')
+  const [logoutError, setLogoutError] = useState('')
+  const [profile, setProfile] = useState(null)
+  const [profileLoading, setProfileLoading] = useState(false)
+  const [profileError, setProfileError] = useState('')
 
   const handleLogout = async () => {
     setLoading(true)
-    setError('')
+    setLogoutError('')
 
     try {
       const result = await logoutUser()
@@ -20,13 +24,43 @@ function HomePage() {
         return
       }
 
-      setError(result.message)
+      setLogoutError(result.message)
     } catch {
-      setError('Không thể kết nối máy chủ, vui lòng thử lại.')
+      setLogoutError('Không thể kết nối máy chủ, vui lòng thử lại.')
     } finally {
       setLoading(false)
     }
   }
+
+  const handleToggleProfile = async () => {
+    if (profile) {
+      setProfile(null)
+      setProfileError('')
+      return
+    }
+
+    setProfileLoading(true)
+    setProfileError('')
+
+    try {
+      const result = await getMyProfile()
+
+      if (result.success) {
+        setProfile(result.data)
+        return
+      }
+
+      setProfileError(result.message)
+    } catch {
+      setProfileError('Không thể kết nối máy chủ, vui lòng thử lại.')
+    } finally {
+      setProfileLoading(false)
+    }
+  }
+
+  const statusText = profile?.status === 1 ? 'Active' : 'Inactive'
+  const statusClass = profile?.status === 1 ? 'profile-status profile-status--active' : 'profile-status profile-status--inactive'
+  const currentUser = getCurrentUser()
 
   return (
     <div className="home-page">
@@ -39,8 +73,8 @@ function HomePage() {
         </p>
 
         <div className="home-actions">
-          <button type="button" className="primary-button" onClick={() => navigate('/')}>
-            Về trang đăng nhập
+          <button type="button" className="primary-button" onClick={handleToggleProfile} disabled={profileLoading}>
+            {profileLoading ? 'Đang tải...' : profile ? 'Đóng' : 'Lấy thông tin của tôi'}
           </button>
           <button type="button" className="secondary-button" onClick={() => navigate('/signup')}>
             Đi đến đăng ký
@@ -50,7 +84,45 @@ function HomePage() {
           </button>
         </div>
 
-        {error && <p className="logout-error">{error}</p>}
+        {profileError && <p className="logout-error">{profileError}</p>}
+        {logoutError && <p className="logout-error">{logoutError}</p>}
+
+
+        {profile && (
+          <div className="profile-card">
+            <div className="profile-avatar">{profile.displayName?.charAt(0)?.toUpperCase() || 'U'}</div>
+
+            <div className="profile-header">
+              <div>
+                <p className="profile-label">Tên hiển thị</p>
+                <h3>{profile.displayName || 'Người dùng'}</h3>
+              </div>
+              <span className={statusClass}>{statusText}</span>
+            </div>
+
+            <div className="profile-grid">
+              <div className="profile-item">
+                <span className="profile-label">User ID</span>
+                <strong>{profile.userId || 'N/A'}</strong>
+              </div>
+
+              <div className="profile-item">
+                <span className="profile-label">Số điện thoại</span>
+                <strong>{profile.phone || 'N/A'}</strong>
+              </div>
+
+              <div className="profile-item">
+                <span className="profile-label">Email</span>
+                <strong>{profile.email || 'N/A'}</strong>
+              </div>
+
+              <div className="profile-item">
+                <span className="profile-label">Trạng thái</span>
+                <strong>{profile.status === 1 ? 'Đang hoạt động' : 'Không hoạt động'}</strong>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   )
