@@ -57,7 +57,15 @@ function LoginForm({ onNavigateToSignUp }) {
       })
 
       if (result.success) {
-        navigate('/home')
+        navigate('/home', {
+          state: {
+            user: result.data,
+            toast: {
+              type: 'success',
+              message: 'Đăng nhập thành công.',
+            },
+          },
+        })
         return
       }
 

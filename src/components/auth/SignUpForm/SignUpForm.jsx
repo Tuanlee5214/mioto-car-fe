@@ -61,7 +61,15 @@ function SignUpForm() {
       })
 
       if (result.success) {
-        navigate('/home')
+        navigate('/home', {
+          state: {
+            user: result.data,
+            toast: {
+              type: 'success',
+              message: 'Đăng ký thành công.',
+            },
+          },
+        })
         return
       }
 
