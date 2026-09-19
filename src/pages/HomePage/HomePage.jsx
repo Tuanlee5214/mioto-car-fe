@@ -1,11 +1,12 @@
 import { useEffect, useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useLocation, useNavigate } from 'react-router-dom'
 import { getCurrentUser, logoutUser } from '../../services/authService'
 import { getMyProfile, updateMyProfile } from '../../services/userService'
 import './HomePage.css'
 
 function HomePage() {
   const navigate = useNavigate()
+  const location = useLocation()
   const [loading, setLoading] = useState(false)
   const [logoutError, setLogoutError] = useState('')
   const [profile, setProfile] = useState(null)
@@ -16,6 +17,14 @@ function HomePage() {
   const [saveLoading, setSaveLoading] = useState(false)
   const [fieldErrors, setFieldErrors] = useState({ email: '', displayName: '' })
   const [toast, setToast] = useState({ type: '', message: '' })
+
+  useEffect(() => {
+    const initialToast = location.state?.toast
+
+    if (initialToast?.message) {
+      setToast({ type: initialToast.type || 'success', message: initialToast.message })
+    }
+  }, [location.state])
 
   useEffect(() => {
     if (!toast.message) return undefined
@@ -190,9 +199,6 @@ function HomePage() {
         <div className="home-actions">
           <button type="button" className="primary-button" onClick={handleToggleProfile} disabled={profileLoading}>
             {profileLoading ? 'Đang tải...' : profile ? 'Đóng' : 'Lấy thông tin của tôi'}
-          </button>
-          <button type="button" className="secondary-button" onClick={() => navigate('/signup')}>
-            Đi đến đăng ký
           </button>
           <button type="button" className="danger-button" onClick={handleLogout} disabled={loading}>
             {loading ? 'Đang đăng xuất...' : 'Đăng xuất'}
