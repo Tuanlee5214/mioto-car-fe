@@ -58,6 +58,7 @@ function LoginForm({ onNavigateToSignUp }) {
 
       if (result.success) {
         navigate('/home', {
+          replace: true,
           state: {
             user: result.data,
             toast: {

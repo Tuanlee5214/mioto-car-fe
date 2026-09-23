@@ -1,53 +1,57 @@
-const PROFILE_API_URL = 'http://localhost:8081/api/profile'
+import { apiRequest } from './apiClient'
 
 export async function getMyProfile() {
-  const response = await fetch(PROFILE_API_URL, {
+  const { success, data, message, status } = await apiRequest('/api/profile', {
     method: 'GET',
-    credentials: 'include',
-    headers: {
-      'Content-Type': 'application/json',
-    },
   })
 
-  const result = await response.json()
+  if (status === 401) {
+    return {
+      success: false,
+      authenticated: false,
+      message: message || 'Bạn chưa đăng nhập.',
+    }
+  }
 
-  if (result && typeof result.error === 'number' && result.error >= 0) {
+  if (success && data) {
     return {
       success: true,
-      data: result.data || {},
+      data,
     }
   }
 
   return {
     success: false,
-    message: result?.message || 'Không thể lấy thông tin người dùng.',
+    message: message || 'Không thể lấy thông tin người dùng.',
   }
 }
 
 export async function updateMyProfile({ email, displayName }) {
-  const response = await fetch(PROFILE_API_URL, {
+  const { success, data, message, status } = await apiRequest('/api/profile', {
     method: 'POST',
-    credentials: 'include',
-    headers: {
-      'Content-Type': 'application/json',
-    },
     body: JSON.stringify({
       email: String(email || '').trim(),
       displayName: String(displayName || '').trim(),
     }),
   })
 
-  const result = await response.json()
+  if (status === 401) {
+    return {
+      success: false,
+      authenticated: false,
+      message: message || 'Bạn chưa đăng nhập.',
+    }
+  }
 
-  if (result && typeof result.error === 'number' && result.error >= 0) {
+  if (success && data) {
     return {
       success: true,
-      data: result.data || {},
+      data,
     }
   }
 
   return {
     success: false,
-    message: result?.message || 'Không thể cập nhật thông tin người dùng.',
+    message: message || 'Không thể cập nhật thông tin người dùng.',
   }
 }
