@@ -44,7 +44,8 @@ function HomePage() {
       const result = await logoutUser()
 
       if (result.success) {
-        navigate('/')
+        window.history.replaceState(null, '', '/login')
+        navigate('/login', { replace: true })
         return
       }
 
