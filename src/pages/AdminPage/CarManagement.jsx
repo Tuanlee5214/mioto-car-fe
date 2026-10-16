@@ -52,7 +52,7 @@ function normalizeCar(item) {
       ?? item.car.ownerId ?? item.car.ownerUserId ?? item.car.userId ?? item.car.owner?.userId ?? item.car.owner?.id,
     imageUrl: item.imageUrl ?? item.car.imageUrl,
     images,
-    features: item.features ?? item.car.features ?? item.car.carFeatures ?? item.featureList ?? item.car.featureList ?? item.carFeatureList ?? item.car.carFeatureList,
+    features: item.features ?? item.carFeatures ?? item.car.features ?? item.car.carFeatures ?? item.featureList ?? item.car.featureList ?? item.carFeatureList ?? item.car.carFeatureList,
   }
 }
 

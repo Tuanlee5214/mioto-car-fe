@@ -700,7 +700,13 @@
 }
 
 .admin-feature-icon-picker__options button.is-selected .feature-icon {
-  color: #68756e;
+  color: #46554c;
+}
+
+.admin-feature-icon-picker__options .feature-icon {
+  width: 25px;
+  height: 25px;
+  flex-basis: 25px;
 }
 
 .admin-feature-icon-picker__key {
@@ -1803,7 +1809,10 @@
   font-weight: 650;
 }
 .admin-car-feature-list .feature-icon {
-  color: #7b8580;
+  width: 23px;
+  height: 23px;
+  flex-basis: 23px;
+  color: #626d66;
 }
 .admin-car-feature-list i {
   width: 20px;

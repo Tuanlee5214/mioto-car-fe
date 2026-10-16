@@ -5,6 +5,12 @@ export const FEATURE_ICON_OPTIONS = [
     paths: ['M7 7l10 10-5 4V3l5 4L7 17', 'M7 7l5-4', 'M7 17l5 4'],
   },
   {
+    key: 'etc',
+    label: 'ETC',
+    paths: ['M3 16h18v3H3z', 'm5 16 2-5h10l2 5', 'M8 11l1-3h6l1 3', 'M9 5a4 4 0 0 1 6 0', 'M7 3a7 7 0 0 1 10 0'],
+    circles: [[7, 20, 1], [17, 20, 1]],
+  },
+  {
     key: 'wifi',
     label: 'Wi-Fi',
     paths: ['M3 9a14 14 0 0 1 18 0', 'M6 12a9 9 0 0 1 12 0', 'M9 15a4.5 4.5 0 0 1 6 0'],
