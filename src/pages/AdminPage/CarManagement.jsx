@@ -6,6 +6,8 @@ import { getProvinces } from '../../services/provinceService'
 import { getDistricts } from '../../services/districtService'
 import FeatureIcon from '../../components/ui/FeatureIcon/FeatureIcon'
 import { getCarFeatureItems } from '../../utils/carFeatures'
+import CarBrandIcon from '../../components/ui/CarBrandIcon/CarBrandIcon'
+import CarBrandSelect from '../../components/ui/CarBrandSelect/CarBrandSelect'
 import UserDetailsDialog from './UserDetailsDialog'
 
 const BATCH_SIZE = 20
@@ -121,6 +123,16 @@ function getCarBrandName(car, brands) {
   const brandId = car?.carBrandId ?? nested?.carBrandId ?? nested?.id
   const matchedBrand = brands.find((brand) => String(getBrandId(brand)) === String(brandId))
   return matchedBrand ? getBrandName(matchedBrand) : '—'
+}
+
+function getCarBrandIconKey(car, brands) {
+  const nested = car?.carBrand || car?.brand
+  const nestedIconKey = nested?.iconKey
+  if (nestedIconKey) return nestedIconKey
+
+  const brandId = car?.carBrandId ?? nested?.carBrandId ?? nested?.id
+  if (brandId == null) return ''
+  return brands.find((brand) => String(getBrandId(brand)) === String(brandId))?.iconKey || ''
 }
 
 function getStatus(car) {
@@ -510,16 +522,15 @@ function CarManagement({ canWrite, onRefreshPermissions }) {
             {CAR_STATUSES.map(({ value, label }) => <option key={value} value={value}>{label}</option>)}
           </select>
         </label>
-        <label>
+        <div className="admin-car-filters__field">
           <span>Thương hiệu</span>
-          <select name="carBrandId" value={filters.carBrandId} onChange={changeFilter}>
-            <option value="">Tất cả thương hiệu</option>
-            {brands.map((brand, index) => (
-              <option key={getBrandId(brand) ?? index} value={getBrandId(brand)}>{getBrandName(brand)}</option>
-            ))}
-          </select>
+          <CarBrandSelect
+            brands={brands}
+            value={filters.carBrandId}
+            onChange={(value) => setFilters((current) => ({ ...current, carBrandId: value }))}
+          />
           {brandError && <small className="admin-car-filter-hint">{brandError}</small>}
-        </label>
+        </div>
         <label>
           <span>Năm sản xuất</span>
           <input name="productionYear" type="number" min="1900" max="2100" value={filters.productionYear} onChange={changeFilter} placeholder="Ví dụ: 2022" />
@@ -626,7 +637,12 @@ function CarManagement({ canWrite, onRefreshPermissions }) {
                     <div className="admin-car-card__title-row">
                       <div className="admin-car-card__title">
                         <h3>{carName}</h3>
-                        <p>{getCarBrandName(car, brands)} <span>·</span> {car?.productionYear || '—'}</p>
+                        <p>
+                          <CarBrandIcon iconKey={getCarBrandIconKey(car, brands)} className="car-brand-icon--vehicle" />
+                          <span className="admin-car-card__brand-name">{getCarBrandName(car, brands)}</span>
+                          <span>·</span>
+                          <span className="admin-car-card__year">{car?.productionYear || '—'}</span>
+                        </p>
                       </div>
                       <div className="admin-car-card__price"><strong>{formatPrice(car?.pricePerDay)}</strong><span>/ ngày</span></div>
                     </div>
@@ -764,7 +780,7 @@ function CarManagement({ canWrite, onRefreshPermissions }) {
                   ) : <div className="admin-car-gallery__empty"><span aria-hidden="true">▧</span>Xe chưa có ảnh</div>}
                 </section>
                 <div className="admin-car-detail__grid">
-                  <div><span><DetailIcon type="features" />Thương hiệu</span><strong>{getCarBrandName(detailState.car, brands)}</strong></div>
+                  <div><span><DetailIcon type="features" />Thương hiệu</span><strong><CarBrandIcon iconKey={getCarBrandIconKey(detailState.car, brands)} />{getCarBrandName(detailState.car, brands)}</strong></div>
                   <div><span><DetailIcon type="year" />Năm sản xuất</span><strong>{detailState.car.productionYear || '—'}</strong></div>
                   <div><span><DetailIcon type="seats" />Số chỗ</span><strong>{detailState.car.numSeats ? `${detailState.car.numSeats} chỗ` : '—'}</strong></div>
                   <div><span><DetailIcon type="gear" />Hộp số</span><strong>{getEnumLabel(detailState.car.transmission, TRANSMISSIONS)}</strong></div>

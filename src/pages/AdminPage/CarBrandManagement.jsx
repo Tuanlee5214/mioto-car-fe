@@ -5,6 +5,8 @@ import {
   getCarBrands,
   updateCarBrand,
 } from '../../services/carBrandService'
+import CarBrandIcon from '../../components/ui/CarBrandIcon/CarBrandIcon'
+import { CAR_BRAND_ICON_OPTIONS } from '../../components/ui/CarBrandIcon/carBrandIconOptions'
 
 const BATCH_SIZE = 20
 
@@ -26,6 +28,7 @@ function CarBrandManagement({ canWrite, onRefreshPermissions }) {
   const [formOpen, setFormOpen] = useState(false)
   const [editingId, setEditingId] = useState(null)
   const [nameBrand, setNameBrand] = useState('')
+  const [iconKey, setIconKey] = useState('')
   const [formLoading, setFormLoading] = useState(false)
   const [formSaving, setFormSaving] = useState(false)
   const [formError, setFormError] = useState('')
@@ -108,6 +111,7 @@ function CarBrandManagement({ canWrite, onRefreshPermissions }) {
   const openCreateForm = () => {
     setEditingId(null)
     setNameBrand('')
+    setIconKey('')
     setFormError('')
     setFormOpen(true)
   }
@@ -116,6 +120,7 @@ function CarBrandManagement({ canWrite, onRefreshPermissions }) {
     const id = getBrandId(brand)
     setEditingId(id)
     setNameBrand(getBrandName(brand))
+    setIconKey(brand?.iconKey || '')
     setFormError('')
     setFormOpen(true)
     setFormLoading(true)
@@ -127,6 +132,7 @@ function CarBrandManagement({ canWrite, onRefreshPermissions }) {
       }
       const detail = result.data?.carBrand || result.data
       setNameBrand(getBrandName(detail) || getBrandName(brand))
+      setIconKey(detail?.iconKey || brand?.iconKey || '')
     } catch {
       setFormError('Không thể tải thông tin thương hiệu xe.')
     } finally {
@@ -141,13 +147,17 @@ function CarBrandManagement({ canWrite, onRefreshPermissions }) {
       setFormError('Vui lòng nhập tên thương hiệu.')
       return
     }
+    if (!CAR_BRAND_ICON_OPTIONS.some((option) => option.key === iconKey)) {
+      setFormError('Vui lòng chọn biểu tượng cho thương hiệu.')
+      return
+    }
 
     setFormSaving(true)
     setFormError('')
     try {
       const result = editingId == null
-        ? await createCarBrand(trimmedName)
-        : await updateCarBrand(editingId, trimmedName)
+        ? await createCarBrand(trimmedName, iconKey)
+        : await updateCarBrand(editingId, trimmedName, iconKey)
       if (!result.success) {
         setFormError(result.message)
         return
@@ -205,6 +215,7 @@ function CarBrandManagement({ canWrite, onRefreshPermissions }) {
                 <tr>
                   <th scope="col">Mã</th>
                   <th scope="col">Tên thương hiệu</th>
+                  <th scope="col">Icon key</th>
                   {canWrite && <th scope="col" className="admin-brand-table__actions-heading">Thao tác</th>}
                 </tr>
               </thead>
@@ -214,7 +225,13 @@ function CarBrandManagement({ canWrite, onRefreshPermissions }) {
                   return (
                     <tr key={id ?? `${getBrandName(brand)}-${index}`}>
                       <td>{id ?? '—'}</td>
-                      <td><strong>{getBrandName(brand) || 'Chưa có tên'}</strong></td>
+                      <td>
+                        <span className="admin-feature-name">
+                          <CarBrandIcon iconKey={brand.iconKey} />
+                          <strong>{getBrandName(brand) || 'Chưa có tên'}</strong>
+                        </span>
+                      </td>
+                      <td><code>{brand.iconKey || '—'}</code></td>
                       {canWrite && (
                         <td className="admin-brand-table__actions">
                           <button type="button" aria-label={`Sửa ${getBrandName(brand)}`} title="Sửa" onClick={() => openEditForm(brand)}>✎</button>
@@ -262,6 +279,24 @@ function CarBrandManagement({ canWrite, onRefreshPermissions }) {
                 autoFocus
                 disabled={formLoading || formSaving}
               />
+              <fieldset className="admin-feature-icon-picker" disabled={formLoading || formSaving}>
+                <legend>Chọn biểu tượng thương hiệu</legend>
+                <div className="admin-feature-icon-picker__options">
+                  {CAR_BRAND_ICON_OPTIONS.map((option) => (
+                    <button
+                      className={iconKey === option.key ? 'is-selected' : ''}
+                      type="button"
+                      key={option.key}
+                      aria-pressed={iconKey === option.key}
+                      onClick={() => setIconKey(option.key)}
+                    >
+                      <CarBrandIcon iconKey={option.key} />
+                      <span>{option.label}</span>
+                    </button>
+                  ))}
+                </div>
+                {iconKey && <p className="admin-feature-icon-picker__key">Giá trị lưu: <code>{iconKey}</code></p>}
+              </fieldset>
               {formError && <p className="admin-brand-error-text" role="alert">{formError}</p>}
               <div className="admin-brand-modal__actions">
                 <button type="button" className="admin-brand-cancel" disabled={formSaving} onClick={() => setFormOpen(false)}>Hủy</button>

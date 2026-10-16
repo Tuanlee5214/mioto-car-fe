@@ -9,6 +9,7 @@ import { getFeatures } from '../../services/featureService'
 import { getProvinces } from '../../services/provinceService'
 import { addCarFeatures, addCarImages, createCar, createCarUnavail, deleteCarUnavail, getCarUnavails, getMyCars, getAdminCarById, removeCarFeatures, removeCarImages, updateCar, uploadCarImage } from '../../services/carService'
 import { getCarFeatureItems } from '../../utils/carFeatures'
+import CarBrandIcon from '../../components/ui/CarBrandIcon/CarBrandIcon'
 import '../../pages/AdminPage/AdminPage.css'
 import './MyCarsPage.css'
 import './MyCarsOverrides.css'
@@ -664,7 +665,11 @@ function MyCarsPage() {
     finally { setSaving(false) }
   }
 
-  const brandName = (car) => car.brandName || brandNameOf(brands.find((brand) => String(idOf(brand)) === String(car.carBrandId))) || 'Chưa rõ hãng'
+  const brandForCar = (car) => brands.find((brand) => String(idOf(brand)) === String(car.carBrandId))
+  const brandName = (car) => car.brandName || brandNameOf(brandForCar(car)) || 'Chưa rõ hãng'
+  const brandIconKey = (car) => car.carBrand?.iconKey
+    ?? car.brand?.iconKey
+    ?? (car.carBrandId == null ? '' : brandForCar(car)?.iconKey)
   const status = dialog?.car ? carStatus(dialog.car) : null
   const carImages = useMemo(() => dialog?.mode === 'manage' ? managedImages.map(imageSource).filter(Boolean) : getCarImages(dialog?.car), [dialog, managedImages])
 
@@ -698,7 +703,7 @@ function MyCarsPage() {
             </>}
           </div>
           <div className="admin-car-card__body">
-            <div className="admin-car-card__title-row"><div className="admin-car-card__title"><h3>{carName}</h3><p>{brandName(car)} <span>·</span> {car.productionYear || '—'}</p></div><div className="admin-car-card__price"><strong>{money(car.pricePerDay)}</strong><span>/ ngày</span></div></div>
+            <div className="admin-car-card__title-row"><div className="admin-car-card__title"><h3>{carName}</h3><p><CarBrandIcon iconKey={brandIconKey(car)} className="car-brand-icon--vehicle" /><span className="admin-car-card__brand-name">{brandName(car)}</span><span>·</span><span className="admin-car-card__year">{car.productionYear || '—'}</span></p></div><div className="admin-car-card__price"><strong>{money(car.pricePerDay)}</strong><span>/ ngày</span></div></div>
             <div className="admin-car-card__specs">
               <span><b aria-hidden="true"><DetailIcon type="seats" /></b>{car.numSeats ? `${car.numSeats} chỗ` : '—'}</span>
               <span><b aria-hidden="true"><DetailIcon type="gear" /></b>{enumLabel(car.transmission, { 1: 'Số tự động', 2: 'Số sàn' })}</span>
@@ -716,7 +721,7 @@ function MyCarsPage() {
       {dialog.loading ? <div className="admin-car-detail__state">Đang tải thông tin xe…</div> : dialog.error ? <div className="admin-car-detail__state admin-car-detail__state--error" role="alert">{dialog.error}</div> : <><nav className="my-car-management-tabs" aria-label="Quản lý xe"><button type="button" className={managementTab === 'details' ? 'is-active' : ''} onClick={() => setManagementTab('details')}>Chi tiết xe</button><button type="button" className={managementTab === 'features' ? 'is-active' : ''} onClick={() => { setManagementTab('features'); setManagementSelection([]) }}>Quản lý tính năng</button><button type="button" className={managementTab === 'images' ? 'is-active' : ''} onClick={() => { setManagementTab('images'); setManagementSelection([]) }}>Quản lý ảnh</button><button type="button" className={managementTab === 'availability' ? 'is-active' : ''} onClick={() => { setManagementTab('availability'); setManagementSelection([]) }}>Thời gian xe</button></nav>{managementTab === 'details' ? <div className="admin-car-detail__content">
         <section className="admin-car-gallery" aria-label="Thư viện ảnh xe"><div className="admin-car-gallery__heading"><h3>Hình ảnh xe</h3><span>{carImages.length} ảnh</span></div>{carImages.length ? <div className="admin-car-gallery__carousel"><img src={carImages[detailImageIndex % carImages.length]} alt={`${dialog.car.carName || 'Xe'} — ảnh ${detailImageIndex + 1}`} />{carImages.length > 1 && <><button type="button" aria-label="Ảnh trước" onClick={() => setDetailImageIndex((current) => (current - 1 + carImages.length) % carImages.length)}>‹</button><button type="button" aria-label="Ảnh tiếp theo" onClick={() => setDetailImageIndex((current) => (current + 1) % carImages.length)}>›</button><span>{detailImageIndex + 1} / {carImages.length}</span></>}</div> : <div className="admin-car-gallery__empty"><span aria-hidden="true">▧</span>Xe chưa có ảnh</div>}</section>
         <div className="admin-car-detail__grid">
-          <div><span><DetailIcon type="brand"/>Thương hiệu</span><strong>{brandName(dialog.car)}</strong></div><div><span><DetailIcon type="year"/>Năm sản xuất</span><strong>{dialog.car.productionYear || '—'}</strong></div><div><span><DetailIcon type="seats"/>Số chỗ</span><strong>{dialog.car.numSeats ? `${dialog.car.numSeats} chỗ` : '—'}</strong></div><div><span><DetailIcon type="gear"/>Hộp số</span><strong>{enumLabel(dialog.car.transmission, { 1: 'Số tự động', 2: 'Số sàn' })}</strong></div><div><span><DetailIcon type="fuel"/>Nhiên liệu</span><strong>{enumLabel(dialog.car.typeFuel, { 1: 'Xăng', 2: 'Dầu diesel', 3: 'Điện' })}</strong></div><div><span><DetailIcon type="fuel"/>Mức tiêu hao</span><strong>{dialog.car.fuelConsumption ? `${dialog.car.fuelConsumption} / 100km` : '—'}</strong></div><div><span><DetailIcon type="price"/>Giá thuê mỗi ngày</span><strong>{money(dialog.car.pricePerDay)}</strong></div><div><span><DetailIcon type="location"/>Địa điểm</span><strong>{[dialog.car.districtName, dialog.car.provinceName].filter(Boolean).join(', ') || '—'}</strong></div>
+          <div><span><DetailIcon type="brand"/>Thương hiệu</span><strong><CarBrandIcon iconKey={brandIconKey(dialog.car)} />{brandName(dialog.car)}</strong></div><div><span><DetailIcon type="year"/>Năm sản xuất</span><strong>{dialog.car.productionYear || '—'}</strong></div><div><span><DetailIcon type="seats"/>Số chỗ</span><strong>{dialog.car.numSeats ? `${dialog.car.numSeats} chỗ` : '—'}</strong></div><div><span><DetailIcon type="gear"/>Hộp số</span><strong>{enumLabel(dialog.car.transmission, { 1: 'Số tự động', 2: 'Số sàn' })}</strong></div><div><span><DetailIcon type="fuel"/>Nhiên liệu</span><strong>{enumLabel(dialog.car.typeFuel, { 1: 'Xăng', 2: 'Dầu diesel', 3: 'Điện' })}</strong></div><div><span><DetailIcon type="fuel"/>Mức tiêu hao</span><strong>{dialog.car.fuelConsumption ? `${dialog.car.fuelConsumption} / 100km` : '—'}</strong></div><div><span><DetailIcon type="price"/>Giá thuê mỗi ngày</span><strong>{money(dialog.car.pricePerDay)}</strong></div><div><span><DetailIcon type="location"/>Địa điểm</span><strong>{[dialog.car.districtName, dialog.car.provinceName].filter(Boolean).join(', ') || '—'}</strong></div>
         </div>
         <section className="admin-car-detail__text admin-car-detail__features"><h3><DetailIcon type="brand"/>Tính năng xe</h3>{getCarFeatureItems(dialog.car).length ? <div className="admin-car-feature-list">{getCarFeatureItems(dialog.car).map((feature, index) => <span key={feature.id ?? `${feature.name}-${index}`}><FeatureIcon iconKey={feature.iconKey} />{feature.name}</span>)}</div> : <p>Chưa cập nhật tính năng xe.</p>}</section>
         <section className="admin-car-detail__text"><h3><DetailIcon type="description"/>Mô tả xe</h3><p>{dialog.car.description || 'Chưa có mô tả.'}</p></section><section className="admin-car-detail__text"><h3><DetailIcon type="policy"/>Chính sách</h3><p>{dialog.car.policy || 'Chưa có chính sách.'}</p></section>

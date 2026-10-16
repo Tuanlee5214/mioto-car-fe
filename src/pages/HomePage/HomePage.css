@@ -1197,9 +1197,26 @@
 }
 
 .car-card__type {
+  display: flex;
+  align-items: center;
+  gap: 6px;
   margin-bottom: 6px;
   color: #849089;
   font-size: 11px;
+}
+
+.car-card__type .car-brand-icon {
+  width: 46px;
+  height: 34px;
+  flex: 0 0 46px;
+  margin-right: 2px;
+}
+
+.car-card__type > span:first-of-type {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .car-card h3 {

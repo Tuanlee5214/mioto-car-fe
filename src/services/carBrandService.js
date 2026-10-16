@@ -34,23 +34,22 @@ export async function getCarBrandById(id) {
   return { success: true, data: result.data }
 }
 
-export async function createCarBrand(nameBrand) {
+export async function createCarBrand(nameBrand, iconKey) {
   const result = await apiRequest(RESOURCE_URL, {
     method: 'POST',
-    body: JSON.stringify({ nameBrand: String(nameBrand).trim() }),
+    body: JSON.stringify({ nameBrand: String(nameBrand).trim(), iconKey: String(iconKey) }),
   })
   const error = getApiError(result, 'Không thể tạo thương hiệu xe.')
 
   return error ? { success: false, message: error } : { success: true, data: result.data }
 }
 
-export async function updateCarBrand(id, nameBrand) {
+export async function updateCarBrand(id, nameBrand, iconKey) {
   const result = await apiRequest(`${RESOURCE_URL}/${encodeURIComponent(id)}`, {
     method: 'PUT',
-    body: JSON.stringify({ nameBrand: String(nameBrand).trim() }),
+    body: JSON.stringify({ nameBrand: String(nameBrand).trim(), iconKey: String(iconKey) }),
   })
   const error = getApiError(result, 'Không thể cập nhật thương hiệu xe.')
 
   return error ? { success: false, message: error } : { success: true, data: result.data }
 }
-

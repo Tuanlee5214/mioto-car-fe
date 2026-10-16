@@ -1,0 +1,31 @@
+.car-brand-icon {
+  width: 32px;
+  height: 32px;
+  flex: 0 0 32px;
+  object-fit: contain;
+  vertical-align: middle;
+}
+
+.car-brand-icon--filter {
+  width: 48px;
+  height: 36px;
+  flex: 0 0 48px;
+}
+
+.car-brand-icon--vehicle {
+  width: 50px;
+  height: 36px;
+  flex: 0 0 50px;
+}
+
+.car-brand-icon--brand-table {
+  width: 56px;
+  height: 46px;
+  flex: 0 0 56px;
+}
+
+.car-brand-icon--picker {
+  width: 68px;
+  height: 48px;
+  flex: 0 0 68px;
+}

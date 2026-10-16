@@ -709,6 +709,18 @@
   flex-basis: 25px;
 }
 
+.admin-feature-icon-picker__options .car-brand-icon {
+  width: 68px;
+  height: 48px;
+  flex-basis: 68px;
+}
+
+.admin-brand-manager .admin-brand-table .car-brand-icon {
+  width: 56px;
+  height: 46px;
+  flex-basis: 56px;
+}
+
 .admin-feature-icon-picker__key {
   margin-top: 10px;
   color: #74817a;
@@ -1030,7 +1042,8 @@
   font-weight: 650;
 }
 
-.admin-car-filters > label {
+.admin-car-filters > label,
+.admin-car-filters > .admin-car-filters__field {
   min-width: 0;
   display: grid;
   align-content: start;
@@ -1039,7 +1052,8 @@
   transition: color 0.18s ease;
 }
 
-.admin-car-filters > label > span {
+.admin-car-filters > label > span,
+.admin-car-filters__field > span {
   color: #344a3c;
   font-size: 14px;
   font-weight: 750;
@@ -1047,9 +1061,11 @@
   transition: color 0.18s ease;
 }
 
-.admin-car-filters > label:focus-within > span { color: #07845e; }
+.admin-car-filters > label:focus-within > span,
+.admin-car-filters__field:focus-within > span { color: #07845e; }
 
-.admin-car-filters > label > span b {
+.admin-car-filters > label > span b,
+.admin-car-filters__field > span b {
   color: #0a9c70;
 }
 
@@ -1765,6 +1781,13 @@
   font-weight: 750;
 }
 
+.admin-car-detail__grid strong .car-brand-icon {
+  width: 38px;
+  height: 34px;
+  flex-basis: 38px;
+  margin-right: 8px;
+}
+
 .admin-car-detail__text {
   margin-top: 22px;
 }
@@ -1961,6 +1984,9 @@
 
 .admin-car-card__title p {
   overflow: hidden;
+  display: flex;
+  align-items: center;
+  gap: 5px;
   margin: 5px 0 0;
   color: #829087;
   font-size: 14px;
@@ -1969,7 +1995,28 @@
   white-space: nowrap;
 }
 
-.admin-car-card__title p span { padding: 0 3px; color: #b0bbb4; }
+.admin-car-card__title p .car-brand-icon {
+  width: 50px;
+  height: 36px;
+  flex: 0 0 50px;
+  margin-right: 2px;
+}
+
+.admin-car-card__title p .admin-car-card__brand-name {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.admin-car-card__title p .admin-car-card__brand-name,
+.admin-car-card__title p .admin-car-card__year {
+  flex: 0 1 auto;
+}
+
+.admin-car-card__title p > span:not(.admin-car-card__brand-name):not(.admin-car-card__year) {
+  flex: 0 0 auto;
+  color: #b0bbb4;
+}
 .admin-car-card__price { flex: 0 0 auto; display: grid; justify-items: end; gap: 2px; }
 .admin-car-card__price strong { color: #087b59; font-size: 17px; font-weight: 800; white-space: nowrap; }
 .admin-car-card__price span { color: #89958e; font-size: 14px; }

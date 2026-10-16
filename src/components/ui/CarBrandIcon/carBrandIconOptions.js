@@ -1,0 +1,18 @@
+export const CAR_BRAND_ICON_OPTIONS = [
+  { key: 'toyota', label: 'Toyota' },
+  { key: 'honda', label: 'Honda' },
+  { key: 'hyundai', label: 'Hyundai' },
+  { key: 'kia', label: 'Kia' },
+  { key: 'mazda', label: 'Mazda' },
+  { key: 'mitsubishi', label: 'Mitsubishi' },
+  { key: 'nissan', label: 'Nissan' },
+  { key: 'suzuki', label: 'Suzuki' },
+  { key: 'ford', label: 'Ford' },
+  { key: 'bmw', label: 'BMW' },
+  { key: 'mercedes-benz', label: 'Mercedes-Benz' },
+  { key: 'volkswagen', label: 'Volkswagen' },
+  { key: 'vinfast', label: 'VinFast' },
+  { key: 'lexus', label: 'Lexus' },
+  { key: 'chevrolet', label: 'Chevrolet' },
+  { key: 'audi', label: 'Audi' },
+]
