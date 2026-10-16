@@ -674,12 +674,19 @@ function MyCarsPage() {
     ?? (car.carBrandId == null ? '' : brandForCar(car)?.iconKey)
   const status = dialog?.car ? carStatus(dialog.car) : null
   const carImages = useMemo(() => dialog?.mode === 'manage' ? managedImages.map(imageSource).filter(Boolean) : getCarImages(dialog?.car), [dialog, managedImages])
+  const activeCarCount = cars.filter((car) => carStatus(car).className === 'active').length
+  const pendingCarCount = cars.filter((car) => carStatus(car).className === 'pending').length
 
   return <main className="my-cars-page">
     {notification && <div className={`admin-brand-toast admin-brand-toast--${notification.type}`} role={notification.type === 'error' ? 'alert' : 'status'}><span className="admin-brand-toast__icon" aria-hidden="true">{notification.type === 'error' ? '!' : '✓'}</span><p>{notification.message}</p><button type="button" aria-label="Đóng thông báo" onClick={() => setNotification(null)}>×</button></div>}
     <header className="my-cars-header"><Link className="my-cars-brand" to="/"><span>M</span> mioto</Link><Link to="/">← Trang chủ</Link></header>
     <section className="my-cars-content">
       <div className="my-cars-heading"><div><span className="my-cars-eyebrow">QUẢN LÝ TÀI SẢN</span><h1>Xe của tôi</h1><p>Theo dõi và cập nhật thông tin những chiếc xe bạn đăng cho thuê.</p></div>{cars.length > 0 && <button className="my-cars-primary" onClick={openCreate}>＋ Thêm xe mới</button>}</div>
+      {cars.length > 0 && <section className="my-cars-overview" aria-label="Tổng quan đội xe">
+        <article><span className="my-cars-overview__icon" aria-hidden="true">▤</span><div><strong>{cars.length}</strong><span>Tổng số xe</span></div></article>
+        <article><span className="my-cars-overview__icon my-cars-overview__icon--active" aria-hidden="true">✓</span><div><strong>{activeCarCount}</strong><span>Đang hoạt động</span></div></article>
+        <article><span className="my-cars-overview__icon my-cars-overview__icon--pending" aria-hidden="true">◷</span><div><strong>{pendingCarCount}</strong><span>Chờ duyệt</span></div></article>
+      </section>}
       {error && <div className="my-cars-error" role="alert">{error}<button onClick={() => { setError(''); setLoading(true); refreshCars().catch((e) => setError(e.message)).finally(() => setLoading(false)) }}>Thử lại</button>{cars.length === 0 && <button onClick={openCreate}>Đăng ký xe</button>}</div>}
       <div className="my-cars-list-scroll">
       {loading ? <div className="my-cars-state">Đang tải danh sách xe…</div> : cars.length === 0 ? <section className="my-cars-empty"><div className="my-cars-empty-icon" aria-hidden="true">🚘</div><h2>Bạn chưa có xe nào</h2><p>Đăng ký chiếc xe đầu tiên để bắt đầu chia sẻ hành trình cùng Mioto.</p><button className="my-cars-primary" onClick={openCreate}>Đăng ký làm chủ xe</button></section> : <div className="admin-car-grid">{cars.map((car, index) => {
