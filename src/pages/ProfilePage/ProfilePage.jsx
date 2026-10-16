@@ -13,9 +13,14 @@ function ProfilePage() {
   const [saving, setSaving] = useState(false)
   const [loggingOut, setLoggingOut] = useState(false)
   const [editing, setEditing] = useState(false)
-  const [error, setError] = useState('')
-  const [successMessage, setSuccessMessage] = useState('')
+  const [notification, setNotification] = useState(null)
   const [fieldErrors, setFieldErrors] = useState({ displayName: '', email: '' })
+
+  useEffect(() => {
+    if (!notification) return undefined
+    const timer = window.setTimeout(() => setNotification(null), 3500)
+    return () => window.clearTimeout(timer)
+  }, [notification])
 
   useEffect(() => {
     let mounted = true
@@ -31,9 +36,8 @@ function ProfilePage() {
             displayName: user.displayName || '',
             email: user.email || '',
           })
-          setError('')
         } else {
-          setError(result.message || 'Không thể tải thông tin người dùng.')
+          setNotification({ type: 'error', message: result.message || 'Không thể tải thông tin người dùng.' })
           const cachedUser = getCurrentUser()
           if (cachedUser) {
             setForm({
@@ -43,7 +47,7 @@ function ProfilePage() {
           }
         }
       } catch {
-        if (mounted) setError('Không thể kết nối máy chủ, vui lòng thử lại.')
+        if (mounted) setNotification({ type: 'error', message: 'Không thể kết nối máy chủ, vui lòng thử lại.' })
       } finally {
         if (mounted) setLoading(false)
       }
@@ -78,8 +82,7 @@ function ProfilePage() {
     if (errors.displayName || errors.email) return
 
     setSaving(true)
-    setError('')
-    setSuccessMessage('')
+    setNotification(null)
     try {
       const result = await updateMyProfile(form)
       if (result.success) {
@@ -89,12 +92,12 @@ function ProfilePage() {
           email: result.data.email || '',
         })
         setEditing(false)
-        setSuccessMessage('Cập nhật thông tin thành công.')
+        setNotification({ type: 'success', message: 'Cập nhật thông tin thành công.' })
       } else {
-        setError(result.message || 'Không thể cập nhật thông tin.')
+        setNotification({ type: 'error', message: result.message || 'Không thể cập nhật thông tin.' })
       }
     } catch {
-      setError('Không thể kết nối máy chủ, vui lòng thử lại.')
+      setNotification({ type: 'error', message: 'Không thể kết nối máy chủ, vui lòng thử lại.' })
     } finally {
       setSaving(false)
     }
@@ -102,16 +105,16 @@ function ProfilePage() {
 
   const handleLogout = async () => {
     setLoggingOut(true)
-    setError('')
+    setNotification(null)
     try {
       const result = await logoutUser()
       if (result.success) {
         navigate('/', { replace: true })
       } else {
-        setError(result.message || 'Đăng xuất thất bại.')
+        setNotification({ type: 'error', message: result.message || 'Đăng xuất thất bại.' })
       }
     } catch {
-      setError('Không thể kết nối máy chủ, vui lòng thử lại.')
+      setNotification({ type: 'error', message: 'Không thể kết nối máy chủ, vui lòng thử lại.' })
     } finally {
       setLoggingOut(false)
     }
@@ -122,6 +125,19 @@ function ProfilePage() {
 
   return (
     <div className="profile-page">
+      {notification && (
+        <div
+          className={`profile-toast profile-toast--${notification.type}`}
+          role={notification.type === 'error' ? 'alert' : 'status'}
+        >
+          <span className="profile-toast__icon" aria-hidden="true">
+            {notification.type === 'error' ? '!' : '✓'}
+          </span>
+          <p>{notification.message}</p>
+          <button type="button" aria-label="Đóng thông báo" onClick={() => setNotification(null)}>×</button>
+        </div>
+      )}
+
       <header className="profile-site-header">
         <Link className="profile-brand" to="/" aria-label="Trở về trang chủ Mioto">
           <span className="profile-brand__mark">M</span>
@@ -153,8 +169,6 @@ function ProfilePage() {
             </div>
           </div>
 
-          {error && <p className="profile-page-error" role="alert">{error}</p>}
-          {successMessage && <p className="profile-page-success" role="status">{successMessage}</p>}
           {loading ? (
             <p className="profile-page-loading">Đang tải thông tin tài khoản...</p>
           ) : editing ? (
@@ -201,8 +215,7 @@ function ProfilePage() {
                       email: profile?.email || '',
                     })
                     setFieldErrors({ displayName: '', email: '' })
-                    setError('')
-                    setSuccessMessage('')
+                    setNotification(null)
                     setEditing(false)
                   }}
                 >
@@ -226,8 +239,7 @@ function ProfilePage() {
                       email: profile?.email || '',
                     })
                     setFieldErrors({ displayName: '', email: '' })
-                    setError('')
-                    setSuccessMessage('')
+                    setNotification(null)
                     setEditing(true)
                   }}
                 >
