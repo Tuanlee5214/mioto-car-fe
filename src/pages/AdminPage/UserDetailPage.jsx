@@ -182,8 +182,8 @@ function UserDetailPage({ userId, canViewRoles, canAssignRoles, readPermissionDi
           : <>
             <header className="admin-user-profile-card">
               <div className="admin-user-profile-card__identity">
-                <div className="admin-user-profile-card__avatar" aria-hidden="true">{getInitials(user.displayName)}</div>
-                <div><span className="admin-module-card__eyebrow">HỒ SƠ NGƯỜI DÙNG · #{user.userId ?? userId}</span><h2 id="user-detail-title">{user.displayName || 'Chưa có tên'}</h2><p>{user.email || 'Chưa có email'}</p></div>
+                <div className="admin-user-profile-card__avatar" aria-hidden="true">{user.imageUrl && <img src={user.imageUrl} alt="" onError={(event) => { event.currentTarget.hidden = true; event.currentTarget.nextElementSibling.hidden = false }} />}<span hidden={Boolean(user.imageUrl)}>{getInitials(user.displayName)}</span></div>
+                <div className="admin-user-profile-card__copy"><span className="admin-module-card__eyebrow">HỒ SƠ NGƯỜI DÙNG</span><h2 id="user-detail-title">{user.displayName || 'Chưa có tên'}</h2><div className="admin-user-profile-card__meta"><span>#{user.userId ?? userId}</span>{user.email && <span>{user.email}</span>}{user.phone && <span>{user.phone}</span>}</div></div>
               </div>
               <span className={`admin-user-status admin-user-status--${status.className}`}>{status.label}</span>
             </header>

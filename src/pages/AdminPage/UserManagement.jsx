@@ -125,7 +125,7 @@ function UserManagement({ canViewRoles, canAssignRoles, readPermissionDisplayNam
           {filteredUsers.length ? <div className="admin-user-grid">{filteredUsers.map((user, index) => {
               const status = USER_STATUSES[Number(user.status)] || { label: 'Không xác định', className: 'unknown' }
               return <button type="button" className="admin-user-card" key={user.userId ?? index} onClick={() => setSelectedUserId(user.userId)} disabled={user.userId == null}>
-                <span className="admin-user-card__top"><span className="admin-user-profile-card__avatar" aria-hidden="true">{getInitials(user.displayName)}</span><span className={`admin-user-status admin-user-status--${status.className}`}>{status.label}</span></span>
+                <span className="admin-user-card__top"><span className="admin-user-profile-card__avatar" aria-hidden="true">{user.imageUrl && <img src={user.imageUrl} alt="" onError={(event) => { event.currentTarget.hidden = true; event.currentTarget.nextElementSibling.hidden = false }} />}<span hidden={Boolean(user.imageUrl)}>{getInitials(user.displayName)}</span></span><span className={`admin-user-status admin-user-status--${status.className}`}>{status.label}</span></span>
                 <span className="admin-user-card__name">{user.displayName || 'Chưa có tên'}</span>
                 <span className="admin-user-card__id">USER #{user.userId ?? '—'}</span>
                 <span className="admin-user-card__contact"><span><i aria-hidden="true">☎</i>{user.phone || 'Chưa có số điện thoại'}</span><span><i aria-hidden="true">✉</i>{user.email || 'Chưa có email'}</span></span>

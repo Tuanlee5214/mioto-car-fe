@@ -54,7 +54,7 @@ function UserDetailsDialog({ userId, onClose, canViewRoles = false }) {
     <div className="admin-user-dialog-backdrop" onMouseDown={(event) => { if (event.target === event.currentTarget) onClose() }}>
       <section className="admin-user-dialog" role="dialog" aria-modal="true" aria-labelledby="admin-user-dialog-title">
         <header className="admin-user-dialog__header">
-          <div className="admin-user-avatar" aria-hidden="true">{getInitials(name)}</div>
+          <div className="admin-user-avatar" aria-hidden="true">{user.imageUrl && <img src={user.imageUrl} alt="" onError={(event) => { event.currentTarget.hidden = true; event.currentTarget.nextElementSibling.hidden = false }} />}<span hidden={Boolean(user.imageUrl)}>{getInitials(name)}</span></div>
           <div><span className="admin-module-card__eyebrow">HỒ SƠ NGƯỜI DÙNG</span><h2 id="admin-user-dialog-title">{userState.loading ? 'Đang tải thông tin…' : name}</h2></div>
           <button type="button" className="admin-user-dialog__close" aria-label="Đóng" onClick={onClose}>×</button>
         </header>

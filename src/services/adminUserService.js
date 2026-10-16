@@ -1,10 +1,21 @@
 import { apiRequest } from './apiClient'
+import { buildApiUrl } from '../constants/api'
 
 function getApiError(result, fallbackMessage) {
   const apiError = result?.result?.error
   const succeeded = result?.success && result?.response?.ok
     && (typeof apiError !== 'number' || apiError === 0)
   return succeeded ? '' : result?.message || result?.result?.message || fallbackMessage
+}
+
+function normalizeUser(user) {
+  if (!user || typeof user !== 'object') return user
+  return {
+    ...user,
+    imageUrl: user.imageUrl || (user.publicId
+      ? buildApiUrl(`/images/profiles/${encodeURIComponent(user.publicId)}`)
+      : ''),
+  }
 }
 
 export async function getUsers({ count = 20, offset = 0 } = {}) {
@@ -17,7 +28,7 @@ export async function getUsers({ count = 20, offset = 0 } = {}) {
   const items = Array.isArray(payload)
     ? payload
     : [payload?.items, payload?.users, payload?.data].find(Array.isArray) || []
-  return { success: true, data: items, count: payload?.count, offset: payload?.offset }
+  return { success: true, data: items.map(normalizeUser), count: payload?.count, offset: payload?.offset }
 }
 
 export async function getUserById(userId) {
@@ -25,7 +36,8 @@ export async function getUserById(userId) {
   const error = getApiError(result, 'Không thể tải thông tin người dùng.')
   if (error) return { success: false, message: error }
   const payload = result.data
-  return { success: true, data: payload?.user || payload?.item || payload }
+  const user = payload?.value ?? payload?.user ?? payload?.item ?? payload
+  return { success: true, data: normalizeUser(user) }
 }
 
 export async function getUserRoles(userId) {
