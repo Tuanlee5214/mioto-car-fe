@@ -7,7 +7,7 @@ import { validateLoginForm } from '../../../utils/validation'
 import { loginUser } from '../../../services/authService'
 import './LoginForm.css'
 
-function LoginForm({ onNavigateToSignUp }) {
+function LoginForm({ onNavigateToSignUp, onSuccess }) {
   const navigate = useNavigate()
 
   const [form, setForm] = useState({
@@ -57,6 +57,11 @@ function LoginForm({ onNavigateToSignUp }) {
       })
 
       if (result.success) {
+        if (onSuccess) {
+          onSuccess(result.data)
+          return
+        }
+
         navigate('/home', {
           replace: true,
           state: {

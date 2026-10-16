@@ -6,7 +6,7 @@ import { validateSignUpForm } from '../../../utils/validation'
 import { signUpUser } from '../../../services/authService'
 import './SignUpForm.css'
 
-function SignUpForm() {
+function SignUpForm({ onNavigateToLogin, onSuccess }) {
   const navigate = useNavigate()
 
   const [form, setForm] = useState({
@@ -61,6 +61,11 @@ function SignUpForm() {
       })
 
       if (result.success) {
+        if (onSuccess) {
+          onSuccess(result.data)
+          return
+        }
+
         navigate('/home', {
           replace: true,
           state: {
@@ -194,7 +199,11 @@ function SignUpForm() {
 
       <p className="signup-text">
         Đã có tài khoản?{' '}
-        <button type="button" className="text-link-btn" onClick={() => navigate('/')}>
+        <button
+          type="button"
+          className="text-link-btn"
+          onClick={onNavigateToLogin || (() => navigate('/login'))}
+        >
           Đăng nhập
         </button>
       </p>

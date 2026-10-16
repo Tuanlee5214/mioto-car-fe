@@ -5,16 +5,17 @@ import LoginForm from '../../components/auth/LoginForm/LoginForm'
 import { checkAuth } from '../../services/authService'
 import './LoginPage.css'
 
-function LoginPage({ onNavigateToSignUp }) {
+function LoginPage({ onNavigateToSignUp, redirectTo = '/home', checkExistingSession = true, onSuccess }) {
   const navigate = useNavigate()
 
   useEffect(() => {
+    if (!checkExistingSession) return undefined
     let cancelled = false
 
     const verify = async () => {
       const result = await checkAuth()
       if (!cancelled && result.success && result.authenticated) {
-        navigate('/home', { replace: true })
+        navigate(redirectTo, { replace: true })
       }
     }
 
@@ -23,14 +24,23 @@ function LoginPage({ onNavigateToSignUp }) {
     return () => {
       cancelled = true
     }
-  }, [navigate])
+  }, [checkExistingSession, navigate, redirectTo])
 
   return (
     <div className="login-page">
       <LoginHero />
 
       <div className="login-panel">
-        <LoginForm onNavigateToSignUp={onNavigateToSignUp} />
+        <LoginForm
+          onNavigateToSignUp={onNavigateToSignUp}
+          onSuccess={(user) => {
+            if (onSuccess) {
+              onSuccess(user)
+              return
+            }
+            navigate(redirectTo, { replace: true })
+          }}
+        />
       </div>
     </div>
   )

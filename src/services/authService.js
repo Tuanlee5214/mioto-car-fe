@@ -4,13 +4,18 @@ const LOGIN_API_URL = buildApiUrl('/api/login')
 const SIGNUP_API_URL = buildApiUrl('/api/signup')
 const LOGOUT_API_URL = buildApiUrl('/api/logout')
 const CHECK_AUTH_API_URL = buildApiUrl('/api/checkauth')
+let checkAuthRequest = null
+
+function getFallbackUserId() {
+  return Number(localStorage.getItem('userId')) || 6
+}
 
 export function saveCurrentUser(user) {
   if (!user) return
 
   const normalizedUser = {
     ...user,
-    userId: user.userId ?? user.id ?? Number(localStorage.getItem('userId')) ?? 6,
+    userId: user.userId ?? user.id ?? getFallbackUserId(),
   }
 
   localStorage.setItem('userId', String(normalizedUser.userId))
@@ -50,7 +55,7 @@ export async function loginUser({ phone, pwd }) {
     const user = result?.data || {}
     const normalizedUser = {
       ...user,
-      userId: user.userId ?? user.id ?? Number(localStorage.getItem('userId')) ?? 6,
+      userId: user.userId ?? user.id ?? getFallbackUserId(),
     }
 
     saveCurrentUser(normalizedUser)
@@ -88,7 +93,7 @@ export async function signUpUser({ phone, pwd, displayName, email }) {
     const user = result?.data || {}
     const normalizedUser = {
       ...user,
-      userId: user.userId ?? user.id ?? Number(localStorage.getItem('userId')) ?? 6,
+      userId: user.userId ?? user.id ?? getFallbackUserId(),
     }
 
     saveCurrentUser(normalizedUser)
@@ -132,13 +137,25 @@ export async function logoutUser() {
   }
 }
 
-export async function checkAuth() {
+export function checkAuth({ forceRefresh = false } = {}) {
+  if (forceRefresh) return requestCheckAuth()
+
+  if (!checkAuthRequest) {
+    checkAuthRequest = requestCheckAuth().finally(() => {
+      checkAuthRequest = null
+    })
+  }
+  return checkAuthRequest
+}
+
+async function requestCheckAuth() {
   try {
     const response = await fetch(CHECK_AUTH_API_URL, {
       method: 'GET',
       credentials: 'include',
+      cache: 'no-store',
       headers: {
-        'Content-Type': 'application/json',
+        Accept: 'application/json',
       },
     })
 
@@ -153,11 +170,33 @@ export async function checkAuth() {
       }
     }
 
-    if (result && typeof result.error === 'number' && result.error >= 0) {
-      const user = result?.data || {}
+    const payload = result?.data || {}
+    const user = payload.user || payload
+    const hasUserIdentity = ['userId', 'id', 'phone', 'email', 'displayName'].some((key) => user?.[key] != null)
+
+    if (response.status === 403 || result?.status === 403 || result?.error === 403) {
+      const sessionUser = hasUserIdentity ? user : getCurrentUser()
+      if (sessionUser) {
+        const normalizedUser = {
+          ...sessionUser,
+          userId: sessionUser.userId ?? sessionUser.id ?? getFallbackUserId(),
+        }
+        saveCurrentUser(normalizedUser)
+        return {
+          success: true,
+          authenticated: true,
+          data: normalizedUser,
+          isSuperAdmin: payload.isSuperAdmin,
+          roles: Array.isArray(payload.roles) ? payload.roles : [],
+        }
+      }
+    }
+
+    if ((response.ok && result?.error === 0) || hasUserIdentity) {
+      const roles = Array.isArray(payload.roles) ? payload.roles : []
       const normalizedUser = {
         ...user,
-        userId: user.userId ?? user.id ?? Number(localStorage.getItem('userId')) ?? 6,
+        userId: user.userId ?? user.id ?? getFallbackUserId(),
       }
 
       saveCurrentUser(normalizedUser)
@@ -166,19 +205,21 @@ export async function checkAuth() {
         success: true,
         authenticated: true,
         data: normalizedUser,
+        isSuperAdmin: payload.isSuperAdmin,
+        // Keep authorization data in memory; always refresh it from checkauth.
+        roles,
       }
     }
 
     return {
       success: false,
-      authenticated: false,
+      authenticated: null,
       message: result?.message || 'Không xác thực được phiên làm việc.',
     }
-  } catch (error) {
-    clearCurrentUser()
+  } catch {
     return {
       success: false,
-      authenticated: false,
+      authenticated: null,
       message: 'Không thể kết nối máy chủ.',
     }
   }
