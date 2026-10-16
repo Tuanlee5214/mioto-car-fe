@@ -79,22 +79,27 @@ function parseCarPrice(value) {
 function UnavailCalendar({ records, onSelectDay, onExtendRange, onDragStart, onDragEnd, selectedStart, selectedEnd }) {
   const [monthOffset, setMonthOffset] = useState(0)
   const today = new Date()
-  const months = Array.from({ length: 6 }, (_, index) => new Date(today.getFullYear(), today.getMonth() + monthOffset + index, 1))
+  const month = new Date(today.getFullYear(), today.getMonth() + monthOffset, 1)
   const weekdays = ['Thứ 2', 'Thứ 3', 'Thứ 4', 'Thứ 5', 'Thứ 6', 'Thứ 7', 'CN']
   const dayLabels = (dayStart, dayEnd) => records.filter((item) => unavailStart(item) < dayEnd && unavailEnd(item) > dayStart).map((item) => {
     const left = Math.max(0, (unavailStart(item) - dayStart) / 86400000 * 100)
     const right = Math.min(100, (unavailEnd(item) - dayStart) / 86400000 * 100)
     return { left, width: Math.max(0, right - left) }
   })
+  const offset = (month.getDay() + 6) % 7
+  const daysInMonth = new Date(month.getFullYear(), month.getMonth() + 1, 0).getDate()
+  const cells = [...Array(offset).fill(null), ...Array.from({ length: daysInMonth }, (_, index) => index + 1)]
+  while (cells.length % 7) cells.push(null)
+
   return <div className="my-car-calendar">
-    <div className="my-car-calendar__nav"><button type="button" onClick={() => setMonthOffset((offset) => Math.max(0, offset - 1))} disabled={monthOffset === 0}>‹ Tháng trước</button><span>Hiển thị 6 tháng</span><button type="button" onClick={() => setMonthOffset((offset) => offset + 1)}>Tháng sau ›</button></div>
-    {months.map((month) => {
-      const firstDay = new Date(month.getFullYear(), month.getMonth(), 1)
-      const offset = (firstDay.getDay() + 6) % 7
-      const daysInMonth = new Date(month.getFullYear(), month.getMonth() + 1, 0).getDate()
-      const cells = [...Array(offset).fill(null), ...Array.from({ length: daysInMonth }, (_, index) => index + 1)]
-      while (cells.length % 7) cells.push(null)
-      return <section className="my-car-calendar__month" key={dateKey(month)}><h4>Tháng {month.getMonth() + 1} năm {month.getFullYear()}</h4><div className="my-car-calendar__grid">{weekdays.map((weekday) => <strong className="my-car-calendar__weekday" key={weekday}>{weekday}</strong>)}{cells.map((day, index) => {
+    <div className="my-car-calendar__legend"><span><i /> Thời gian xe bận</span><span><i className="is-past" /> Ngày đã qua</span></div>
+    <div className="my-car-calendar__nav">
+      <button type="button" onClick={() => setMonthOffset((offset) => offset - 1)}>‹ Tháng trước</button>
+      <strong>Tháng {month.getMonth() + 1} năm {month.getFullYear()}</strong>
+      <button type="button" onClick={() => setMonthOffset((offset) => offset + 1)}>Tháng sau ›</button>
+    </div>
+    <section className="my-car-calendar__month">
+      <div className="my-car-calendar__grid">{weekdays.map((weekday) => <strong className="my-car-calendar__weekday" key={weekday}>{weekday}</strong>)}{cells.map((day, index) => {
         if (!day) return <div className="my-car-calendar__empty" key={`empty-${index}`} />
         const start = new Date(month.getFullYear(), month.getMonth(), day)
         const end = new Date(month.getFullYear(), month.getMonth(), day + 1)
@@ -104,9 +109,8 @@ function UnavailCalendar({ records, onSelectDay, onExtendRange, onDragStart, onD
         const inSelection = selectedStart && selectedEnd && key >= selectedStart && key < selectedEnd
         const selectable = !past || segments.length > 0
         return <button type="button" key={key} className={`my-car-calendar__day${past ? ' is-past' : ''}${segments.length ? ' has-unavail' : ''}${inSelection ? ' is-selected' : ''}`} onPointerDown={() => { if (selectable) { onDragStart(); onSelectDay(start) } }} onPointerUp={onDragEnd} onPointerCancel={onDragEnd} onClick={(event) => selectable && event.detail === 0 && onSelectDay(start)} onPointerEnter={(event) => !past && event.buttons === 1 && onExtendRange(start)} disabled={!selectable} aria-label={`${day}/${month.getMonth() + 1}${segments.length ? ', xe bận một phần hoặc cả ngày' : ''}`}><span>{day}</span>{segments.map((segment, segmentIndex) => <i key={segmentIndex} style={{ left: `${segment.left}%`, width: `${segment.width}%` }} />)}</button>
-      })}</div></section>
-    })}
-    <div className="my-car-calendar__legend"><span><i /> Thời gian xe bận</span><span><i className="is-past" /> Ngày đã qua</span></div>
+      })}</div>
+    </section>
   </div>
 }
 
