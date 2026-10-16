@@ -1,7 +1,8 @@
 import { useEffect, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
+import { buildApiUrl } from '../../constants/api'
 import { getCurrentUser, logoutUser } from '../../services/authService'
-import { getMyProfile, updateMyProfile } from '../../services/userService'
+import { getMyProfile, updateMyProfile, uploadProfileImage } from '../../services/userService'
 import { isValidDisplayName, isValidEmail } from '../../utils/validation'
 import './ProfilePage.css'
 
@@ -11,6 +12,8 @@ function ProfilePage() {
   const [form, setForm] = useState({ displayName: '', email: '' })
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
+  const [uploadingImage, setUploadingImage] = useState(false)
+  const [imageSelection, setImageSelection] = useState(null)
   const [loggingOut, setLoggingOut] = useState(false)
   const [editing, setEditing] = useState(false)
   const [notification, setNotification] = useState(null)
@@ -21,6 +24,10 @@ function ProfilePage() {
     const timer = window.setTimeout(() => setNotification(null), 3500)
     return () => window.clearTimeout(timer)
   }, [notification])
+
+  useEffect(() => () => {
+    if (imageSelection?.preview) URL.revokeObjectURL(imageSelection.preview)
+  }, [imageSelection?.preview])
 
   useEffect(() => {
     let mounted = true
@@ -75,6 +82,27 @@ function ProfilePage() {
     setFieldErrors(validate(nextForm))
   }
 
+  const handleImageSelection = async (event) => {
+    const input = event.currentTarget
+    const file = input.files?.[0]
+    input.value = ''
+    if (!file) return
+
+    const preview = URL.createObjectURL(file)
+    setImageSelection({ file, preview, publicId: '', error: '' })
+    setUploadingImage(true)
+    setNotification(null)
+    try {
+      const result = await uploadProfileImage(file)
+      if (!result.success) throw new Error(result.message)
+      setImageSelection((current) => current?.file === file ? { ...current, publicId: result.data } : current)
+    } catch (uploadError) {
+      setImageSelection((current) => current?.file === file ? { ...current, error: uploadError.message || 'Tải ảnh đại diện thất bại.' } : current)
+    } finally {
+      setUploadingImage(false)
+    }
+  }
+
   const handleSave = async (event) => {
     event.preventDefault()
     const errors = validate(form)
@@ -84,13 +112,15 @@ function ProfilePage() {
     setSaving(true)
     setNotification(null)
     try {
-      const result = await updateMyProfile(form)
+      const publicId = imageSelection?.publicId || profile?.publicId
+      const result = await updateMyProfile({ ...form, publicId })
       if (result.success) {
         setProfile(result.data)
         setForm({
           displayName: result.data.displayName || '',
           email: result.data.email || '',
         })
+        setImageSelection(null)
         setEditing(false)
         setNotification({ type: 'success', message: 'Cập nhật thông tin thành công.' })
       } else {
@@ -121,7 +151,11 @@ function ProfilePage() {
   }
 
   const displayName = profile?.displayName || profile?.name || form.displayName || 'Người dùng'
-  const avatar = profile?.avatarUrl || profile?.avatar || profile?.imageUrl
+  const avatar = imageSelection?.preview
+    || profile?.avatarUrl
+    || profile?.avatar
+    || profile?.imageUrl
+    || (profile?.publicId ? buildApiUrl(`/images/profiles/${encodeURIComponent(profile.publicId)}`) : '')
 
   return (
     <div className="profile-page">
@@ -175,7 +209,23 @@ function ProfilePage() {
             <form className="profile-details-form" onSubmit={handleSave}>
               <div className="profile-edit-heading">
                 <h3>Chỉnh sửa thông tin</h3>
-                <p>Nhập thông tin mới rồi nhấn “Cập nhật” để lưu thay đổi.</p>
+                <p>Cập nhật ảnh đại diện và thông tin cá nhân của bạn.</p>
+              </div>
+              <div className="profile-avatar-field">
+                <span>Ảnh đại diện</span>
+                <label className={`profile-avatar-upload${uploadingImage ? ' is-uploading' : ''}`}>
+                  <input
+                    type="file"
+                    accept="image/*"
+                    onChange={handleImageSelection}
+                    disabled={saving || uploadingImage}
+                    aria-label="Chọn ảnh đại diện"
+                  />
+                  <span aria-hidden="true">{uploadingImage ? '◌' : '＋'}</span>
+                  <strong>{uploadingImage ? 'Đang tải ảnh lên...' : 'Chọn ảnh mới'}</strong>
+                  <small>Ảnh sẽ được cập nhật cùng hồ sơ</small>
+                </label>
+                {imageSelection?.error && <small className="profile-avatar-error" role="alert">{imageSelection.error}</small>}
               </div>
               <label>
                 <span>Tên hiển thị</span>
@@ -202,18 +252,19 @@ function ProfilePage() {
                 {fieldErrors.email && <small>{fieldErrors.email}</small>}
               </label>
               <div className="profile-page-actions">
-                <button className="profile-save-button" type="submit" disabled={saving}>
-                  {saving ? 'Đang cập nhật...' : 'Cập nhật'}
+                <button className="profile-save-button" type="submit" disabled={saving || uploadingImage || Boolean(imageSelection && !imageSelection.publicId)}>
+                  {uploadingImage ? 'Đang tải ảnh...' : saving ? 'Đang cập nhật...' : 'Cập nhật'}
                 </button>
                 <button
                   className="profile-cancel-button"
                   type="button"
-                  disabled={saving}
+                  disabled={saving || uploadingImage}
                   onClick={() => {
                     setForm({
                       displayName: profile?.displayName || profile?.name || '',
                       email: profile?.email || '',
                     })
+                    setImageSelection(null)
                     setFieldErrors({ displayName: '', email: '' })
                     setNotification(null)
                     setEditing(false)
