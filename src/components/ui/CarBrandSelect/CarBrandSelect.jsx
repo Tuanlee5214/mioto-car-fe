@@ -10,7 +10,14 @@ function getBrandName(brand) {
   return brand?.nameBrand ?? brand?.brandName ?? brand?.name ?? 'Thương hiệu'
 }
 
-function CarBrandSelect({ brands, value, onChange, label = 'Thương hiệu' }) {
+function CarBrandSelect({
+  brands,
+  value,
+  onChange,
+  label = 'Thương hiệu',
+  placeholder = 'Tất cả thương hiệu',
+  required = false,
+}) {
   const [isOpen, setIsOpen] = useState(false)
   const selectId = useId()
   const rootRef = useRef(null)
@@ -18,7 +25,7 @@ function CarBrandSelect({ brands, value, onChange, label = 'Thương hiệu' }) 
   const optionRefs = useRef([])
   const focusOptionOnOpenRef = useRef(false)
   const selectedBrand = brands.find((brand) => String(getBrandId(brand)) === String(value))
-  const selectedLabel = selectedBrand ? getBrandName(selectedBrand) : 'Tất cả thương hiệu'
+  const selectedLabel = selectedBrand ? getBrandName(selectedBrand) : placeholder
 
   useEffect(() => {
     if (!isOpen) return undefined
@@ -91,6 +98,7 @@ function CarBrandSelect({ brands, value, onChange, label = 'Thương hiệu' }) 
         aria-haspopup="listbox"
         aria-expanded={isOpen}
         aria-controls={`${selectId}-options`}
+        aria-required={required || undefined}
         ref={triggerRef}
         onClick={() => setIsOpen((open) => !open)}
       >
@@ -116,7 +124,7 @@ function CarBrandSelect({ brands, value, onChange, label = 'Thương hiệu' }) 
             onClick={() => selectBrand('')}
           >
             <span className="car-brand-select__all-icon" aria-hidden="true">✦</span>
-            <span>Tất cả thương hiệu</span>
+            <span>{placeholder}</span>
           </button>
           {brands.map((brand, index) => {
             const brandId = getBrandId(brand)

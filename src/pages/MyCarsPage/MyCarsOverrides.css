@@ -44,6 +44,10 @@
   font-weight: 750;
 }
 
+.my-cars-page .my-car-form .car-brand-select {
+  width: 100%;
+}
+
 .my-cars-page .my-car-form input:not([type="checkbox"]),
 .my-cars-page .my-car-form select,
 .my-cars-page .my-car-form textarea {

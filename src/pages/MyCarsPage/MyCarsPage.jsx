@@ -10,6 +10,7 @@ import { getProvinces } from '../../services/provinceService'
 import { addCarFeatures, addCarImages, createCar, createCarUnavail, deleteCarUnavail, getCarUnavails, getMyCars, getAdminCarById, removeCarFeatures, removeCarImages, updateCar, uploadCarImage } from '../../services/carService'
 import { getCarFeatureItems } from '../../utils/carFeatures'
 import CarBrandIcon from '../../components/ui/CarBrandIcon/CarBrandIcon'
+import CarBrandSelect from '../../components/ui/CarBrandSelect/CarBrandSelect'
 import '../../pages/AdminPage/AdminPage.css'
 import './MyCarsPage.css'
 import './MyCarsOverrides.css'
@@ -639,6 +640,7 @@ function MyCarsPage() {
     try {
       if (dialog.mode === 'create' && uploadingImages > 0) throw new Error('Đợi ảnh tải xong rồi hãy tạo xe.')
       if (dialog.mode === 'create' && imageEntries.some((image) => !image.publicId)) throw new Error('Có ảnh chưa tải thành công. Hãy xóa ảnh lỗi rồi thử lại.')
+      if (!form.carBrandId) throw new Error('Vui lòng chọn hiệu xe.')
       if (!form.districtId) throw new Error('Vui lòng chọn quận huyện.')
       const pricePerDay = parseCarPrice(form.pricePerDay)
       if (!Number.isFinite(pricePerDay) || pricePerDay <= 0) throw new Error('Vui lòng nhập giá thuê mỗi ngày hợp lệ.')
@@ -746,7 +748,17 @@ function MyCarsPage() {
       </> : <><header><div><span className="my-cars-eyebrow">HỒ SƠ XE</span><h2 id="my-cars-dialog-title">{dialog.mode === 'create' ? 'Đăng ký xe' : 'Cập nhật xe'}</h2></div><button type="button" aria-label="Đóng" disabled={saving || uploadingImages > 0} onClick={() => setDialog(null)}>×</button></header>
       {(dialog.mode === 'create' || dialog.mode === 'edit') ? dialog.loading ? <div className="my-cars-state">Đang tải thông tin xe…</div> : <form className="my-car-form" onSubmit={submit}>
         <label>Tên xe<input name="carName" required value={form.carName} onChange={change} /></label><label>Năm sản xuất<select name="productionYear" required value={form.productionYear} onChange={change}>{Array.from({ length: Math.max(1, currentYear - 1999) }, (_, index) => currentYear - index).map((year) => <option key={year} value={year}>{year}</option>)}</select></label>
-        <label>Hiệu xe<select name="carBrandId" required value={form.carBrandId} onChange={change}><option value="">Chọn hiệu xe</option>{brands.map((brand, index) => <option key={idOf(brand) ?? index} value={idOf(brand) ?? ''}>{brandNameOf(brand)}</option>)}</select>{brandError && <small className="admin-car-filter-hint" role="alert">{brandError}</small>}</label><label>Số chỗ<select name="numSeats" required value={form.numSeats} onChange={change}><option value="5">5 chỗ</option><option value="7">7 chỗ</option></select></label>
+        <label>Hiệu xe<CarBrandSelect
+          brands={brands}
+          value={form.carBrandId}
+          onChange={(value) => {
+            setForm((current) => ({ ...current, carBrandId: value }))
+            setBrandError('')
+          }}
+          label="Hiệu xe"
+          placeholder="Chọn hiệu xe"
+          required
+        />{brandError && <small className="admin-car-filter-hint" role="alert">{brandError}</small>}</label><label>Số chỗ<select name="numSeats" required value={form.numSeats} onChange={change}><option value="5">5 chỗ</option><option value="7">7 chỗ</option></select></label>
         <fieldset className="my-car-form-wide my-car-location-picker"><legend>Địa điểm xe</legend><label>Tỉnh / thành<select name="provinceId" required value={form.provinceId} onChange={change}><option value="">{provinces.length ? 'Chọn tỉnh / thành' : 'Đang tải tỉnh / thành…'}</option>{provinces.map((province, index) => <option key={provinceIdOf(province) ?? index} value={provinceIdOf(province) ?? ''}>{provinceNameOf(province)}</option>)}</select>{provinceError && <small role="alert">{provinceError}</small>}</label><label>Quận / huyện<select name="districtId" required value={form.districtId} onChange={change} disabled={!form.provinceId || districtLoading}><option value="">{districtLoading ? 'Đang tải quận huyện…' : form.provinceId ? 'Chọn quận / huyện' : 'Chọn tỉnh / thành trước'}</option>{districts.map((district, index) => <option key={districtIdOf(district) ?? index} value={districtIdOf(district) ?? ''}>{districtNameOf(district)}</option>)}</select>{districtError && <small role="alert">{districtError}</small>}</label></fieldset>
         <label>Hộp số<select name="transmission" value={form.transmission} onChange={change}><option value="1">Số tự động</option><option value="2">Số sàn</option></select></label><label>Nhiên liệu<select name="typeFuel" value={form.typeFuel} onChange={change}><option value="1">Xăng</option><option value="2">Dầu diesel</option><option value="3">Điện</option></select></label>
         <label>Mức tiêu hao (lít/100km)<input name="fuelConsumption" type="text" inputMode="decimal" required value={form.fuelConsumption} onChange={change} placeholder="Ví dụ: 6,5" /></label><label>Giá thuê mỗi ngày (đ)<input name="pricePerDay" type="text" inputMode="numeric" required value={form.pricePerDay} onChange={change} placeholder="Ví dụ: 800000" /></label>
