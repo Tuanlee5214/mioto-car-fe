@@ -120,15 +120,16 @@
   display: inline-flex;
   align-items: center;
   gap: 10px;
+  min-height: 48px;
   border: 1px solid #e7ecea;
   background: white;
   color: #283832;
 }
 
 .account-avatar {
-  width: 30px;
-  height: 30px;
-  flex: 0 0 30px;
+  width: 36px;
+  height: 36px;
+  flex: 0 0 36px;
   object-fit: cover;
   border-radius: 50%;
 }
@@ -164,6 +165,7 @@
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+  font-size: 15px;
 }
 
 .auth-modal-backdrop {
@@ -1718,11 +1720,18 @@
   .account-button {
     gap: 6px;
     padding: 0 8px;
+    min-height: 42px;
+  }
+
+  .account-avatar {
+    width: 32px;
+    height: 32px;
+    flex-basis: 32px;
   }
 
   .account-name {
-    max-width: 95px;
-    font-size: 12px;
+    max-width: 100px;
+    font-size: 13px;
   }
 
   .auth-modal .login-card {
