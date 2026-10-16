@@ -4,6 +4,8 @@ import { getCurrentUser } from '../../services/authService'
 import { buildApiUrl } from '../../constants/api'
 import { getCarBrands } from '../../services/carBrandService'
 import { getCars, getAdminCarById } from '../../services/carService'
+import FeatureIcon from '../../components/ui/FeatureIcon/FeatureIcon'
+import { getCarFeatureItems } from '../../utils/carFeatures'
 import './SearchCarsPage.css'
 import '../AdminPage/AdminPage.css'
 
@@ -20,10 +22,6 @@ const imageUrls = (car) => {
   }).filter(Boolean)
 }
 const normalize = (item) => item?.car ? { ...item.car, ...item, ownerName: item.ownerName ?? item.car.ownerName ?? item.owner?.displayName ?? item.owner?.name ?? item.car.owner?.displayName ?? item.car.owner?.name, images: item.images ?? item.car.images } : { ...item, ownerName: item?.ownerName ?? item?.owner?.displayName ?? item?.owner?.name }
-const carFeatures = (car) => {
-  const features = car?.features ?? car?.carFeatures ?? car?.featureList ?? car?.carFeatureList ?? []
-  return (Array.isArray(features) ? features : []).map((item) => typeof item === 'string' ? item : item?.featureName ?? item?.nameFeature ?? item?.feature?.nameFeature ?? item?.name ?? '').filter(Boolean)
-}
 const prettyTime = (value) => new Intl.DateTimeFormat('vi-VN', { dateStyle: 'medium', timeStyle: 'short' }).format(new Date(value))
 
 function DetailIcon({ type }) {
@@ -194,7 +192,7 @@ function SearchCarsPage() {
             <div><span><DetailIcon type="user" />Chủ xe</span><strong>{detail.ownerName ?? detail.owner?.displayName ?? detail.owner?.name ?? '—'}</strong></div>
             <div><span><DetailIcon type="id" />Mã xe</span><strong>{carIdOf(detail) ?? '—'}</strong></div>
           </div>
-          <section className="admin-car-detail__text admin-car-detail__features"><h3><DetailIcon type="features" />Tính năng xe</h3>{carFeatures(detail).length ? <div className="admin-car-feature-list">{carFeatures(detail).map((feature, index) => <span key={`${feature}-${index}`}><i aria-hidden="true">✓</i>{feature}</span>)}</div> : <p>Chưa cập nhật tính năng xe.</p>}</section>
+          <section className="admin-car-detail__text admin-car-detail__features"><h3><DetailIcon type="features" />Tính năng xe</h3>{getCarFeatureItems(detail).length ? <div className="admin-car-feature-list">{getCarFeatureItems(detail).map((feature, index) => <span key={feature.id ?? `${feature.name}-${index}`}><FeatureIcon iconKey={feature.iconKey} />{feature.name}</span>)}</div> : <p>Chưa cập nhật tính năng xe.</p>}</section>
           <section className="admin-car-detail__text"><h3><DetailIcon type="description" />Mô tả xe</h3><p>{detail.description || 'Chưa có mô tả.'}</p></section>
           <section className="admin-car-detail__text"><h3><DetailIcon type="policy" />Chính sách</h3><p>{detail.policy || 'Chưa có chính sách.'}</p></section>
         </div>}

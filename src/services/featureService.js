@@ -22,21 +22,20 @@ export async function getFeatures({ count = 20, offset = 0 } = {}) {
   return { success: true, data: items }
 }
 
-export async function createFeature(nameFeature) {
+export async function createFeature(nameFeature, iconKey) {
   const result = await apiRequest(RESOURCE_URL, {
     method: 'POST',
-    body: JSON.stringify({ nameFeature: String(nameFeature).trim() }),
+    body: JSON.stringify({ nameFeature: String(nameFeature).trim(), iconKey: String(iconKey) }),
   })
   const error = getApiError(result, 'Không thể tạo tính năng xe.')
   return error ? { success: false, message: error } : { success: true, data: result.data }
 }
 
-export async function updateFeature(id, nameFeature) {
+export async function updateFeature(id, nameFeature, iconKey) {
   const result = await apiRequest(`${RESOURCE_URL}/${encodeURIComponent(id)}`, {
     method: 'PUT',
-    body: JSON.stringify({ nameFeature: String(nameFeature).trim() }),
+    body: JSON.stringify({ nameFeature: String(nameFeature).trim(), iconKey: String(iconKey) }),
   })
   const error = getApiError(result, 'Không thể cập nhật tính năng xe.')
   return error ? { success: false, message: error } : { success: true, data: result.data }
 }
-

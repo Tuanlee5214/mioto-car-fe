@@ -1,4 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
+import FeatureIcon from '../../components/ui/FeatureIcon/FeatureIcon'
+import { FEATURE_ICON_OPTIONS } from '../../components/ui/FeatureIcon/featureIconOptions'
 import { createFeature, getFeatures, updateFeature } from '../../services/featureService'
 
 const BATCH_SIZE = 20
@@ -15,6 +17,7 @@ function FeatureManagement({ canWrite, onRefreshPermissions }) {
   const [formOpen, setFormOpen] = useState(false)
   const [editingId, setEditingId] = useState(null)
   const [nameFeature, setNameFeature] = useState('')
+  const [iconKey, setIconKey] = useState('')
   const [formSaving, setFormSaving] = useState(false)
   const [formError, setFormError] = useState('')
   const [notification, setNotification] = useState(null)
@@ -85,12 +88,14 @@ function FeatureManagement({ canWrite, onRefreshPermissions }) {
   const openCreateForm = () => {
     setEditingId(null)
     setNameFeature('')
+    setIconKey('')
     setFormError('')
     setFormOpen(true)
   }
   const openEditForm = (feature) => {
     setEditingId(getFeatureId(feature))
     setNameFeature(getFeatureName(feature))
+    setIconKey(feature?.iconKey || '')
     setFormError('')
     setFormOpen(true)
   }
@@ -98,10 +103,16 @@ function FeatureManagement({ canWrite, onRefreshPermissions }) {
     event.preventDefault()
     const trimmedName = nameFeature.trim()
     if (!trimmedName) { setFormError('Vui lòng nhập tên tính năng.'); return }
+    if (!FEATURE_ICON_OPTIONS.some((option) => option.key === iconKey)) {
+      setFormError('Vui lòng chọn biểu tượng cho tính năng.')
+      return
+    }
     setFormSaving(true)
     setFormError('')
     try {
-      const result = editingId == null ? await createFeature(trimmedName) : await updateFeature(editingId, trimmedName)
+      const result = editingId == null
+        ? await createFeature(trimmedName, iconKey)
+        : await updateFeature(editingId, trimmedName, iconKey)
       if (!result.success) { setFormError(result.message); return }
       setFormOpen(false)
       setNotification({ type: 'success', message: editingId == null ? 'Đã tạo tính năng xe.' : 'Đã cập nhật tính năng xe.' })
@@ -121,12 +132,12 @@ function FeatureManagement({ canWrite, onRefreshPermissions }) {
       {listError && <div className="admin-brand-error" role="alert"><span>{listError}</span><button type="button" onClick={() => setReloadKey((key) => key + 1)}>Thử lại</button></div>}
       <div ref={listScrollRef} className="admin-management-list-scroll">
       {loading ? <div className="admin-brand-state">Đang tải danh sách tính năng…</div> : features.length ? <>
-        <div className="admin-brand-table-wrap"><table className="admin-brand-table"><thead><tr><th scope="col">Mã</th><th scope="col">Tên tính năng</th><th scope="col">Cập nhật lần cuối</th>{canWrite && <th scope="col" className="admin-brand-table__actions-heading">Thao tác</th>}</tr></thead><tbody>
+        <div className="admin-brand-table-wrap"><table className="admin-brand-table"><thead><tr><th scope="col">Mã</th><th scope="col">Tính năng</th><th scope="col">Icon key</th><th scope="col">Cập nhật lần cuối</th>{canWrite && <th scope="col" className="admin-brand-table__actions-heading">Thao tác</th>}</tr></thead><tbody>
           {features.map((feature, index) => {
             const id = getFeatureId(feature)
             const updatedAt = Number(feature?.updatedAt)
             const formattedDate = Number.isFinite(updatedAt) && updatedAt > 0 ? new Date(updatedAt).toLocaleString('vi-VN') : '—'
-            return <tr key={id ?? `${getFeatureName(feature)}-${index}`}><td>{id ?? '—'}</td><td><strong>{getFeatureName(feature) || 'Chưa có tên'}</strong></td><td>{formattedDate}</td>{canWrite && <td className="admin-brand-table__actions"><button type="button" aria-label={`Sửa ${getFeatureName(feature)}`} title="Sửa" onClick={() => openEditForm(feature)}>✎</button></td>}</tr>
+            return <tr key={id ?? `${getFeatureName(feature)}-${index}`}><td>{id ?? '—'}</td><td><span className="admin-feature-name"><FeatureIcon iconKey={feature.iconKey} /><strong>{getFeatureName(feature) || 'Chưa có tên'}</strong></span></td><td><code>{feature.iconKey || '—'}</code></td><td>{formattedDate}</td>{canWrite && <td className="admin-brand-table__actions"><button type="button" aria-label={`Sửa ${getFeatureName(feature)}`} title="Sửa" onClick={() => openEditForm(feature)}>✎</button></td>}</tr>
           })}
         </tbody></table></div>
         <div ref={listEndRef} className="admin-brand-list-end" aria-live="polite">{loadingMore ? 'Đang tải thêm…' : hasMore ? 'Cuộn xuống để tải thêm tính năng' : 'Đã hiển thị hết tính năng'}</div>
@@ -134,7 +145,30 @@ function FeatureManagement({ canWrite, onRefreshPermissions }) {
       </div>
       {formOpen && <div className="admin-brand-modal-backdrop" onMouseDown={(event) => { if (event.target === event.currentTarget && !formSaving) setFormOpen(false) }}>
         <section className="admin-brand-modal" role="dialog" aria-modal="true" aria-labelledby="feature-form-title"><div className="admin-brand-modal__heading"><div><span className="admin-module-card__eyebrow">TÍNH NĂNG XE</span><h2 id="feature-form-title">{editingId == null ? 'Thêm tính năng' : 'Sửa tính năng'}</h2></div><button type="button" aria-label="Đóng" disabled={formSaving} onClick={() => setFormOpen(false)}>×</button></div>
-          <form onSubmit={handleSave}><label htmlFor="feature-name">Tên tính năng</label><input id="feature-name" name="nameFeature" value={nameFeature} onChange={(event) => setNameFeature(event.target.value)} placeholder="Ví dụ: Ghế trẻ em" maxLength={100} autoFocus disabled={formSaving} />{formError && <p className="admin-brand-error-text" role="alert">{formError}</p>}<div className="admin-brand-modal__actions"><button type="button" className="admin-brand-cancel" disabled={formSaving} onClick={() => setFormOpen(false)}>Hủy</button><button type="submit" className="admin-brand-add" disabled={formSaving}>{formSaving ? 'Đang lưu…' : editingId == null ? 'Tạo tính năng' : 'Lưu thay đổi'}</button></div></form>
+          <form onSubmit={handleSave}>
+            <label htmlFor="feature-name">Tên tính năng</label>
+            <input id="feature-name" name="nameFeature" value={nameFeature} onChange={(event) => setNameFeature(event.target.value)} placeholder="Ví dụ: Ghế trẻ em" maxLength={100} autoFocus disabled={formSaving} />
+            <fieldset className="admin-feature-icon-picker" disabled={formSaving}>
+              <legend>Chọn biểu tượng</legend>
+              <div className="admin-feature-icon-picker__options">
+                {FEATURE_ICON_OPTIONS.map((option) => (
+                  <button
+                    className={iconKey === option.key ? 'is-selected' : ''}
+                    type="button"
+                    key={option.key}
+                    aria-pressed={iconKey === option.key}
+                    onClick={() => setIconKey(option.key)}
+                  >
+                    <FeatureIcon iconKey={option.key} />
+                    <span>{option.label}</span>
+                  </button>
+                ))}
+              </div>
+              {iconKey && <p className="admin-feature-icon-picker__key">Giá trị lưu: <code>{iconKey}</code></p>}
+            </fieldset>
+            {formError && <p className="admin-brand-error-text" role="alert">{formError}</p>}
+            <div className="admin-brand-modal__actions"><button type="button" className="admin-brand-cancel" disabled={formSaving} onClick={() => setFormOpen(false)}>Hủy</button><button type="submit" className="admin-brand-add" disabled={formSaving}>{formSaving ? 'Đang lưu…' : editingId == null ? 'Tạo tính năng' : 'Lưu thay đổi'}</button></div>
+          </form>
         </section>
       </div>}
     </section>

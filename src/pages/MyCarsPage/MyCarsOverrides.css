@@ -305,6 +305,9 @@
 .my-car-management-intro > span { padding: 8px 12px; font-size: 13px; }
 .my-car-managed-list label { padding: 14px; font-size: 15px; }
 .my-car-managed-list input { width: 17px; height: 17px; }
+.my-car-managed-list label > .my-car-feature-label { display: inline-flex; align-items: center; gap: 8px; }
+.my-car-feature-label { display: inline-flex; align-items: center; gap: 8px; }
+.my-car-feature-label .feature-icon { color: #7b8580; }
 .my-car-managed-list label small { font-size: 12px; }
 .my-car-management-add h4 { color: #304b3a; font-size: 18px; font-weight: 800; }
 .my-car-management-empty, .my-car-management-add > p { font-size: 14px; line-height: 1.5; }

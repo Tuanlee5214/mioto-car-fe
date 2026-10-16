@@ -7,8 +7,10 @@ import { getProvinces } from '../../services/provinceService'
 import { getDistricts } from '../../services/districtService'
 import { getAdminCarById, getCars } from '../../services/carService'
 import { buildApiUrl } from '../../constants/api'
+import FeatureIcon from '../../components/ui/FeatureIcon/FeatureIcon'
 import LoginForm from '../../components/auth/LoginForm/LoginForm'
 import SignUpForm from '../../components/auth/SignUpForm/SignUpForm'
+import { getCarFeatureItems } from '../../utils/carFeatures'
 import '../AdminPage/AdminPage.css'
 import './HomePage.css'
 
@@ -29,10 +31,6 @@ const featuredCarImages = (car) => {
 }
 const featuredCarFuel = (car) => ({ 1: 'Xăng', 2: 'Dầu diesel', 3: 'Điện' })[Number(car?.typeFuel)] || '—'
 const featuredCarTransmission = (car) => Number(car?.transmission) === 2 ? 'Số sàn' : 'Số tự động'
-const featuredCarFeatures = (car) => {
-  const features = car?.features ?? car?.carFeatures ?? car?.featureList ?? car?.carFeatureList ?? []
-  return (Array.isArray(features) ? features : []).map((item) => typeof item === 'string' ? item : item?.featureName ?? item?.nameFeature ?? item?.feature?.nameFeature ?? item?.name ?? '').filter(Boolean)
-}
 const voucherIdOf = (voucher) => voucher?.voucherId ?? voucher?.id
 const voucherImageOf = (voucher) => {
   const image = voucher?.imageUrl
@@ -943,7 +941,7 @@ function HomePage({ initialAuthPanel = '', adminLogin = false, onAdminLoginSucce
                   <div><span><FeaturedCarDetailIcon type="user" />Chủ xe</span><strong>{activeFeaturedCar.ownerName ?? activeFeaturedCar.owner?.displayName ?? activeFeaturedCar.owner?.name ?? '—'}</strong></div>
                   <div><span><FeaturedCarDetailIcon type="id" />Mã xe</span><strong>{featuredCarId(activeFeaturedCar) ?? '—'}</strong></div>
                 </div>
-                <section className="admin-car-detail__text admin-car-detail__features"><h3><FeaturedCarDetailIcon type="features" />Tính năng xe</h3>{featuredCarFeatures(activeFeaturedCar).length ? <div className="admin-car-feature-list">{featuredCarFeatures(activeFeaturedCar).map((feature, index) => <span key={`${feature}-${index}`}><i aria-hidden="true">✓</i>{feature}</span>)}</div> : <p>Chưa cập nhật tính năng xe.</p>}</section>
+                <section className="admin-car-detail__text admin-car-detail__features"><h3><FeaturedCarDetailIcon type="features" />Tính năng xe</h3>{getCarFeatureItems(activeFeaturedCar).length ? <div className="admin-car-feature-list">{getCarFeatureItems(activeFeaturedCar).map((feature, index) => <span key={feature.id ?? `${feature.name}-${index}`}><FeatureIcon iconKey={feature.iconKey} />{feature.name}</span>)}</div> : <p>Chưa cập nhật tính năng xe.</p>}</section>
                 <section className="admin-car-detail__text"><h3><FeaturedCarDetailIcon type="description" />Mô tả xe</h3><p>{activeFeaturedCar.description || 'Chưa có mô tả.'}</p></section>
                 <section className="admin-car-detail__text"><h3><FeaturedCarDetailIcon type="policy" />Chính sách</h3><p>{activeFeaturedCar.policy || 'Chưa có chính sách.'}</p></section>
               </div>}

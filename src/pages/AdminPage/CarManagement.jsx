@@ -4,6 +4,8 @@ import { getCarBrands } from '../../services/carBrandService'
 import { getAdminCarById, getAdminCars, updateCarStatus } from '../../services/carService'
 import { getProvinces } from '../../services/provinceService'
 import { getDistricts } from '../../services/districtService'
+import FeatureIcon from '../../components/ui/FeatureIcon/FeatureIcon'
+import { getCarFeatureItems } from '../../utils/carFeatures'
 import UserDetailsDialog from './UserDetailsDialog'
 
 const BATCH_SIZE = 20
@@ -130,15 +132,6 @@ function getStatus(car) {
 function getEnumLabel(value, options) {
   const match = options.find((option) => Number(value) === option.value)
   return match?.label || value || '—'
-}
-
-function getCarFeatures(car) {
-  const features = car?.features ?? car?.carFeatures ?? car?.featureList ?? car?.carFeatureList ?? car?.featuresCar ?? car?.featureNames ?? []
-  const list = Array.isArray(features) ? features : typeof features === 'string' ? features.split(/[,;\n]/) : []
-  return list.map((feature) => typeof feature === 'string'
-    ? feature.trim()
-    : feature?.featureName ?? feature?.nameFeature ?? feature?.feature?.nameFeature ?? feature?.feature?.name ?? feature?.name ?? feature?.title ?? '')
-    .filter(Boolean)
 }
 
 function DetailIcon({ type }) {
@@ -713,8 +706,8 @@ function CarManagement({ canWrite, onRefreshPermissions }) {
                 </div>
                 <section className="admin-car-detail__text admin-car-detail__features">
                   <h3><DetailIcon type="features" />Tính năng xe</h3>
-                  {getCarFeatures(detailState.car).length
-                    ? <div className="admin-car-feature-list">{getCarFeatures(detailState.car).map((feature, index) => <span key={`${feature}-${index}`}><i aria-hidden="true">✓</i>{feature}</span>)}</div>
+                  {getCarFeatureItems(detailState.car).length
+                    ? <div className="admin-car-feature-list">{getCarFeatureItems(detailState.car).map((feature, index) => <span key={feature.id ?? `${feature.name}-${index}`}><FeatureIcon iconKey={feature.iconKey} />{feature.name}</span>)}</div>
                     : <p>Chưa cập nhật tính năng xe.</p>}
                 </section>
                 <section className="admin-car-detail__text">
