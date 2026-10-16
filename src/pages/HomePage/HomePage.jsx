@@ -6,9 +6,11 @@ import { getVoucherById, getVouchers } from '../../services/voucherService'
 import { getProvinces } from '../../services/provinceService'
 import { getDistricts } from '../../services/districtService'
 import { getAdminCarById, getCars } from '../../services/carService'
+import { getCarBrands } from '../../services/carBrandService'
 import { buildApiUrl } from '../../constants/api'
 import FeatureIcon from '../../components/ui/FeatureIcon/FeatureIcon'
 import CarBrandIcon from '../../components/ui/CarBrandIcon/CarBrandIcon'
+import { CAR_BRAND_ICON_OPTIONS } from '../../components/ui/CarBrandIcon/carBrandIconOptions'
 import LoginForm from '../../components/auth/LoginForm/LoginForm'
 import SignUpForm from '../../components/auth/SignUpForm/SignUpForm'
 import { getCarFeatureItems } from '../../utils/carFeatures'
@@ -21,6 +23,30 @@ const districtIdOf = (item) => item?.districtId ?? item?.id
 const districtNameOf = (item) => item?.districtName ?? item?.nameDistrict ?? item?.name ?? ''
 const featuredCarId = (car) => car?.carId ?? car?.id
 const featuredCarName = (car) => car?.carName ?? car?.nameCar ?? car?.modelName ?? car?.name ?? 'Xe'
+const featuredCarBrandId = (car) => car?.carBrandId ?? car?.brandId
+  ?? car?.carBrand?.carBrandId ?? car?.carBrand?.brandId ?? car?.carBrand?.id
+  ?? car?.brand?.carBrandId ?? car?.brand?.brandId ?? car?.brand?.id
+const featuredBrandName = (brand) => brand?.nameBrand ?? brand?.brandName ?? brand?.name ?? ''
+const featuredCarBrandIconKey = (car, brands) => {
+  const nestedIconKey = car?.carBrand?.iconKey ?? car?.brand?.iconKey
+  if (nestedIconKey) return nestedIconKey
+
+  const brandId = featuredCarBrandId(car)
+  if (brandId != null) {
+    const matchedBrand = brands.find((brand) => String(brand?.carBrandId ?? brand?.brandId ?? brand?.id) === String(brandId))
+    if (matchedBrand?.iconKey) return matchedBrand.iconKey
+  }
+
+  const carBrandName = car?.carBrandName ?? car?.brandName ?? car?.nameBrand
+    ?? car?.carBrand?.nameBrand ?? car?.carBrand?.brandName ?? car?.carBrand?.name
+    ?? car?.brand?.nameBrand ?? car?.brand?.brandName ?? car?.brand?.name
+  const normalizedName = String(carBrandName ?? '').trim().toLocaleLowerCase()
+  const matchingOption = CAR_BRAND_ICON_OPTIONS.find((option) => option.label.toLocaleLowerCase() === normalizedName)
+  if (matchingOption) return matchingOption.key
+
+  const matchingBrand = brands.find((brand) => featuredBrandName(brand).trim().toLocaleLowerCase() === normalizedName)
+  return matchingBrand?.iconKey || ''
+}
 const featuredCarImages = (car) => {
   const images = car?.images ?? car?.carImages ?? car?.imageUrls ?? car?.imageList ?? (car?.imageUrl ? [car.imageUrl] : [])
   return (Array.isArray(images) ? images : images ? [images] : []).map((image) => {
@@ -126,6 +152,7 @@ function HomePage({ initialAuthPanel = '', adminLogin = false, onAdminLoginSucce
   const [activeVoucher, setActiveVoucher] = useState(null)
   const [voucherDetailLoading, setVoucherDetailLoading] = useState(false)
   const [featuredCars, setFeaturedCars] = useState([])
+  const [carBrands, setCarBrands] = useState([])
   const [featuredCarsLoading, setFeaturedCarsLoading] = useState(true)
   const [featuredCarsError, setFeaturedCarsError] = useState('')
   const [featuredCarsReloadKey, setFeaturedCarsReloadKey] = useState(0)
@@ -151,6 +178,23 @@ function HomePage({ initialAuthPanel = '', adminLogin = false, onAdminLoginSucce
     endDate: defaultEndDate,
     endTime: '09:00',
   })
+
+  useEffect(() => {
+    let active = true
+    getCarBrands({ count: 500, offset: 0 })
+      .then((result) => {
+        if (!active) return
+        if (!result.success) {
+          console.error(result.message || 'Không thể tải danh sách thương hiệu xe.')
+          return
+        }
+        setCarBrands(result.data)
+      })
+      .catch((loadError) => {
+        if (active) console.error('Không thể tải danh sách thương hiệu xe.', loadError)
+      })
+    return () => { active = false }
+  }, [])
 
   useEffect(() => {
     let mounted = true
@@ -900,7 +944,7 @@ function HomePage({ initialAuthPanel = '', adminLogin = false, onAdminLoginSucce
                 <span className="car-card__badge">Xe nổi bật</span>
               </div>
               <div className="car-card__details">
-                <div className="car-card__type"><CarBrandIcon iconKey={car.carBrand?.iconKey ?? car.brand?.iconKey} className="car-brand-icon--vehicle" /><span>{car.carBrand?.nameBrand ?? car.brandName ?? car.brand?.name ?? ''}</span>{car.productionYear ? <span>· {car.productionYear}</span> : null}</div>
+                <div className="car-card__type"><CarBrandIcon iconKey={featuredCarBrandIconKey(car, carBrands)} className="car-brand-icon--vehicle" /><span>{car.carBrand?.nameBrand ?? car.brandName ?? car.brand?.name ?? ''}</span>{car.productionYear ? <span>· {car.productionYear}</span> : null}</div>
                 <h3>{name}</h3>
                 <div className="car-card__location"><span aria-hidden="true">⌖</span> {location || 'Chưa cập nhật địa điểm'}</div>
                 <div className="car-card__vehicle-meta">
@@ -931,7 +975,7 @@ function HomePage({ initialAuthPanel = '', adminLogin = false, onAdminLoginSucce
                   return <section className="admin-car-gallery" aria-label="Thư viện ảnh xe"><div className="admin-car-gallery__heading"><h3>Hình ảnh xe</h3><span>{images.length} ảnh</span></div>{images.length ? <div className="admin-car-gallery__carousel"><img src={images[featuredCarImageIndex % images.length]} alt={`${featuredCarName(activeFeaturedCar)} — ảnh ${featuredCarImageIndex + 1}`} />{images.length > 1 && <><button type="button" aria-label="Ảnh trước" onClick={() => setFeaturedCarImageIndex((index) => (index - 1 + images.length) % images.length)}>‹</button><button type="button" aria-label="Ảnh tiếp theo" onClick={() => setFeaturedCarImageIndex((index) => (index + 1) % images.length)}>›</button><span>{featuredCarImageIndex + 1} / {images.length}</span></>}</div> : <div className="admin-car-gallery__empty"><span aria-hidden="true">▧</span>Xe chưa có ảnh</div>}</section>
                 })()}
                 <div className="admin-car-detail__grid">
-                  <div><span><FeaturedCarDetailIcon type="features" />Thương hiệu</span><strong><CarBrandIcon iconKey={activeFeaturedCar.carBrand?.iconKey ?? activeFeaturedCar.brand?.iconKey} />{activeFeaturedCar.brandName ?? activeFeaturedCar.carBrand?.nameBrand ?? activeFeaturedCar.brand?.name ?? '—'}</strong></div>
+                  <div><span><FeaturedCarDetailIcon type="features" />Thương hiệu</span><strong><CarBrandIcon iconKey={featuredCarBrandIconKey(activeFeaturedCar, carBrands)} />{activeFeaturedCar.brandName ?? activeFeaturedCar.carBrand?.nameBrand ?? activeFeaturedCar.brand?.name ?? '—'}</strong></div>
                   <div><span><FeaturedCarDetailIcon type="year" />Năm sản xuất</span><strong>{activeFeaturedCar.productionYear || '—'}</strong></div>
                   <div><span><FeaturedCarDetailIcon type="seats" />Số chỗ</span><strong>{activeFeaturedCar.numSeats ? `${activeFeaturedCar.numSeats} chỗ` : '—'}</strong></div>
                   <div><span><FeaturedCarDetailIcon type="gear" />Hộp số</span><strong>{featuredCarTransmission(activeFeaturedCar)}</strong></div>

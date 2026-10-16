@@ -3,12 +3,12 @@
 These SVGs are stored locally so the UI does not depend on a third-party image
 host at runtime. Sources and their reported license metadata are listed below.
 
-| File | Source | Commons license metadata |
+| File | Source | License metadata |
 | --- | --- | --- |
 | `toyota.svg` | [Toyota logo (Red)](https://commons.wikimedia.org/wiki/File:Toyota_logo_(Red).svg) | Public domain |
 | `honda.svg` | [Honda auto logo](https://commons.wikimedia.org/wiki/File:Honda_auto_logo.svg) | Public domain |
 | `hyundai.svg` | [Hyundai symbol](https://commons.wikimedia.org/wiki/File:Hyundai_symbol.svg) | CC BY-SA 4.0 |
-| `kia.svg` | [Kia Motors logo 2010](https://commons.wikimedia.org/wiki/File:Kia_Motors_logo_2010.svg) | Public domain |
+| `kia.svg` | [Kia](https://github.com/simple-icons/simple-icons/blob/develop/icons/kia.svg) | CC0 |
 | `mazda.svg` | [Mazda](https://github.com/simple-icons/simple-icons/blob/develop/icons/mazda.svg) | CC0 |
 | `mitsubishi.svg` | [Mitsubishi Motors new logo](https://commons.wikimedia.org/wiki/File:Mitsubishi_motors_new_logo.svg) | Public domain |
 | `nissan.svg` | [Nissan logo 2001](https://commons.wikimedia.org/wiki/File:Nissan_logo_2001.svg) | Public domain |
