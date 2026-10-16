@@ -1,0 +1,310 @@
+/* Keep the My Cars controls aligned with the admin fleet cards. */
+.my-cars-page .admin-car-card__specs span {
+  justify-content: flex-start;
+  gap: 5px;
+  white-space: normal;
+}
+
+.my-cars-page .admin-car-card__specs b {
+  width: 26px;
+  height: 26px;
+  flex-basis: 26px;
+}
+
+.my-cars-page .admin-car-card__actions {
+  justify-content: flex-end;
+  gap: 12px;
+}
+
+.my-cars-page .admin-car-card__actions .admin-car-status-button {
+  min-width: 118px;
+  margin: 0;
+}
+
+.my-cars-page .admin-car-detail__content > .admin-car-status-button {
+  display: block;
+  min-height: 42px;
+  margin: 30px 0 0 auto;
+  padding: 0 18px;
+}
+
+@media (max-width: 380px) {
+  .my-cars-page .admin-car-card__specs span { gap: 4px; font-size: 10px; }
+  .my-cars-page .admin-car-card__specs b { width: 24px; height: 24px; flex-basis: 24px; }
+  .my-cars-page .admin-car-card__actions { gap: 8px; }
+  .my-cars-page .admin-car-card__actions .admin-car-status-button { min-width: 0; flex: 1; padding: 0 6px; }
+}
+
+.my-cars-page .my-car-form > label {
+  display: grid;
+  align-content: start;
+  gap: 8px;
+  color: #344a3c;
+  font-size: 13px;
+  font-weight: 750;
+}
+
+.my-cars-page .my-car-form input:not([type="checkbox"]),
+.my-cars-page .my-car-form select,
+.my-cars-page .my-car-form textarea {
+  width: 100%;
+  min-width: 0;
+  min-height: 50px;
+  box-sizing: border-box;
+  border: 1px solid #d6e2da;
+  border-radius: 12px;
+  padding: 0 14px;
+  color: #30473a;
+  background: #fff;
+  font: inherit;
+  font-size: 14px;
+  font-weight: 550;
+  box-shadow: 0 2px 4px rgba(28, 55, 39, 0.035), inset 0 1px #fff;
+  transition: border-color 0.18s ease, box-shadow 0.18s ease, background-color 0.18s ease;
+}
+
+/* Keep car photos at their natural landscape proportions so owners can inspect the full vehicle. */
+.my-cars-page .my-car-managed-images { grid-template-columns: 1fr; gap: 18px; }
+.my-cars-page .my-car-managed-images article > img { width: 100%; height: auto; aspect-ratio: 16 / 9; object-fit: contain; background: #eef2ef; }
+.my-car-calendar { margin-top: 22px; }
+.my-car-calendar__nav { display: flex; justify-content: space-between; align-items: center; gap: 12px; margin-bottom: 18px; color: #78867e; font-size: 13px; }
+.my-car-calendar__nav button { border: 0; border-radius: 8px; padding: 9px 12px; color: #087d58; background: #eaf7f0; font-weight: 700; cursor: pointer; }
+.my-car-calendar__nav button:disabled { opacity: .45; cursor: not-allowed; }
+.my-car-calendar__month { margin: 0 0 24px; }
+.my-car-calendar__month h4 { margin: 0 0 10px; color: #34b872; font-size: 20px; text-align: center; }
+.my-car-calendar__grid { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); border-top: 1px solid #e8eeea; border-left: 1px solid #e8eeea; }
+.my-car-calendar__weekday { padding: 10px 3px; color: #46564e; font-size: 12px; text-align: center; }
+.my-car-calendar__day, .my-car-calendar__empty { position: relative; min-width: 0; min-height: 68px; overflow: hidden; border: 0; border-right: 1px solid #e8eeea; border-bottom: 1px solid #e8eeea; background: #fff; }
+.my-car-calendar__day { padding: 8px 9px; color: #26382f; text-align: left; cursor: pointer; }
+.my-car-calendar__day:hover:not(:disabled) { background: #f1faf5; }
+.my-car-calendar__day > span { position: relative; z-index: 1; font-size: 13px; }
+.my-car-calendar__day.is-past { color: #c1c9c4; background: #f5f6f5; cursor: not-allowed; }
+.my-car-calendar__day.is-selected { outline: 2px solid #0ca575; outline-offset: -2px; background-color: #e5f6ec; }
+.my-car-calendar__day.is-selected > i { opacity: .8; }
+.my-car-calendar__day > i { position: absolute; z-index: 0; top: 0; bottom: 0; background: rgba(100, 104, 101, .38); pointer-events: none; }
+.my-car-calendar__legend { display: flex; flex-wrap: wrap; gap: 18px; margin-top: 12px; color: #69776f; font-size: 12px; }
+.my-car-calendar__legend span { display: flex; align-items: center; gap: 7px; }
+.my-car-calendar__legend i { width: 17px; height: 12px; border-radius: 3px; background: rgba(100, 104, 101, .38); }
+.my-car-calendar__legend i.is-past { background: #e7ebe8; }
+.my-car-unavail-form { margin-top: 24px; padding: 20px; border: 1px solid #e4ece7; border-radius: 14px; background: #fbfdfc; }
+.my-car-unavail-overlay { position: fixed; z-index: 1400; inset: 0; display: grid; place-items: center; padding: 20px; background: rgba(18, 32, 25, .56); }
+.my-car-unavail-overlay > section { width: min(480px, 100%); max-height: min(80vh, 620px); overflow-y: auto; border-radius: 16px; background: #fff; box-shadow: 0 24px 80px rgba(12, 28, 19, .32); }
+.my-car-unavail-overlay .my-car-unavail-form { margin: 0; padding: 22px; border: 0; background: #fff; }
+.my-car-unavail-form__header { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; }
+.my-car-unavail-form h4 { margin: 0 0 14px; color: #304b3a; font-size: 17px; }
+.my-car-unavail-form__header > button { width: 32px; height: 32px; flex: 0 0 auto; margin: -5px -5px 0 0; border: 0; border-radius: 50%; background: #f0f4f2; color: #526159; font-size: 22px; cursor: pointer; }
+.my-car-unavail-form__modes { display: flex; gap: 18px; margin-bottom: 16px; }
+.my-car-unavail-form__modes label { display: flex; align-items: center; gap: 7px; color: #43564b; font-size: 14px; font-weight: 650; }
+.my-car-unavail-form__modes input { accent-color: #0ca575; }
+.my-car-unavail-form__fields { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; margin-bottom: 16px; }
+.my-car-unavail-form__fields label { display: grid; gap: 7px; color: #53645a; font-size: 12px; font-weight: 700; }
+.my-car-unavail-form__fields input { width: 100%; min-height: 42px; padding: 8px 10px; border: 1px solid #dce7e0; border-radius: 8px; background: white; color: #293a31; font: inherit; }
+.my-car-unavail-form__fields small { grid-column: 1 / -1; color: #77847d; }
+.my-car-unavail-error { margin: 0 0 14px; padding: 11px 13px; border-radius: 8px; background: #fff2f0; color: #aa403a; font-size: 13px; }
+.my-car-unavail-hint { margin: 8px 0 18px; color: #738078; font-size: 13px; line-height: 1.55; }
+.my-car-unavail-records { display: grid; gap: 10px; }
+.my-car-unavail-record { display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 12px; border: 1px solid #e4ece7; border-radius: 9px; background: #fff; color: #43564b; font-size: 13px; }
+.my-car-unavail-record button { flex: 0 0 auto; padding: 8px 11px; border: 0; border-radius: 7px; background: #fff0ee; color: #a33f37; font: inherit; font-weight: 700; cursor: pointer; }
+.my-car-unavail-record button:disabled { opacity: .55; cursor: not-allowed; }
+.my-car-unavail-form__actions { display: flex; justify-content: flex-end; gap: 10px; margin-top: 18px; }
+.my-car-unavail-form__actions > button:first-child { padding: 11px 16px; border: 1px solid #dce7e0; border-radius: 9px; background: #fff; color: #53645a; font: inherit; font-weight: 700; cursor: pointer; }
+.my-car-unavail-form__actions > button:disabled { opacity: .55; cursor: not-allowed; }
+@media (max-width: 580px) {
+  .my-car-calendar__day, .my-car-calendar__empty { min-height: 48px; }
+  .my-car-calendar__day { padding: 6px; }
+  .my-car-calendar__weekday { font-size: 10px; }
+  .my-car-unavail-form { padding: 15px; }
+  .my-car-unavail-form__fields { grid-template-columns: 1fr; }
+  .my-car-unavail-record { align-items: flex-start; flex-direction: column; }
+  .my-car-unavail-overlay { padding: 12px; }
+  .my-car-unavail-overlay .my-car-unavail-form { padding: 18px; }
+}
+
+.my-cars-page .my-car-form textarea {
+  min-height: 96px;
+  padding: 12px 14px;
+  resize: vertical;
+}
+
+.my-cars-page .my-car-form input:not([type="checkbox"]):hover,
+.my-cars-page .my-car-form select:hover,
+.my-cars-page .my-car-form textarea:hover { border-color: #a9cdb7; }
+
+.my-cars-page .my-car-form input:not([type="checkbox"]):focus,
+.my-cars-page .my-car-form select:focus,
+.my-cars-page .my-car-form textarea:focus {
+  border-color: #07845e;
+  outline: 0;
+  background-color: #fbfffc;
+  box-shadow: 0 0 0 3px rgba(10, 156, 112, 0.09), inset 0 0 0 1px rgba(10, 156, 112, 0.04);
+}
+
+.my-cars-page .my-car-form select {
+  appearance: none;
+  padding-right: 48px;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='28' height='28' viewBox='0 0 28 28'%3E%3Crect x='1' y='1' width='26' height='26' rx='8' fill='%23eff7f1'/%3E%3Cpath d='m9 12 5 5 5-5' fill='none' stroke='%23087857' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 10px center;
+  background-size: 28px;
+  cursor: pointer;
+}
+
+.my-cars-page .my-car-form input[type="file"] { min-height: auto; padding: 12px; }
+
+.my-cars-page .my-car-previews {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
+  gap: 10px;
+  margin-top: 4px;
+}
+
+.my-cars-page .my-car-preview {
+  min-width: 0;
+  display: grid;
+  grid-template-columns: 58px minmax(0, 1fr) 28px;
+  align-items: center;
+  gap: 9px;
+  border: 1px solid #dce8e1;
+  border-radius: 10px;
+  padding: 7px;
+  background: #fbfdfc;
+}
+
+.my-cars-page .my-car-preview > img {
+  width: 58px;
+  height: 52px;
+  border-radius: 7px;
+  object-fit: cover;
+}
+
+.my-cars-page .my-car-preview > div { min-width: 0; display: grid; gap: 4px; }
+.my-cars-page .my-car-preview strong,
+.my-cars-page .my-car-preview small { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.my-cars-page .my-car-preview strong { color: #344a3c; font-size: 11px; }
+.my-cars-page .my-car-preview small { color: #74847a; font-size: 10px; }
+.my-cars-page .my-car-preview button { width: 27px; height: 27px; border: 0; border-radius: 50%; color: #8a4a43; background: #fff0ed; font-size: 19px; cursor: pointer; }
+.my-cars-page .my-car-preview button:disabled { opacity: .45; cursor: wait; }
+.my-cars-page {
+  height: 100dvh;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.my-cars-header { flex: 0 0 76px; }
+
+.my-cars-content {
+  width: 100%;
+  min-height: 0;
+  flex: 1 1 auto;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  padding-top: 32px;
+  padding-bottom: 28px;
+}
+
+.my-cars-heading,
+.my-cars-error { flex: 0 0 auto; }
+
+.my-cars-list-scroll {
+  min-height: 0;
+  flex: 1 1 auto;
+  overflow: auto;
+  overscroll-behavior: contain;
+  scrollbar-gutter: stable;
+}
+
+@media (max-width: 580px) {
+  .my-cars-header { flex-basis: 64px; }
+  .my-cars-content { padding-top: 22px; padding-bottom: 18px; }
+}
+
+
+.my-cars-page .my-car-form > label { font-size: 14px; }
+.my-cars-page .my-car-form input:not([type="checkbox"]),
+.my-cars-page .my-car-form select,
+.my-cars-page .my-car-form textarea { font-size: 15px; }
+.my-cars-page .my-car-form .my-car-feature-picker {
+  display: flex;
+  align-items: center;
+  gap: 12px 18px;
+  min-width: 0;
+  margin: 0;
+  background: #fbfdfc;
+}
+.my-cars-page .my-car-form .my-car-feature-picker legend { font-size: 14px; }
+.my-cars-page .my-car-form .my-car-feature {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: #344a3c;
+  font-size: 14px;
+  font-weight: 600;
+}
+.my-cars-page .my-car-form .my-car-feature input {
+  width: 18px;
+  height: 18px;
+  accent-color: #0ca575;
+}
+.my-cars-page .my-car-preview > img {
+  object-fit: contain;
+  background: #eef3f0;
+}
+
+.my-cars-page .admin-car-card__photo img {
+  object-fit: cover;
+  background: transparent;
+}
+
+.my-cars-page .my-car-form .my-car-location-picker {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px 16px;
+  min-width: 0;
+  margin: 0;
+  border: 1px solid #dce8e1;
+  border-radius: 12px;
+  padding: 14px;
+  background: #fbfdfc;
+}
+.my-cars-page .my-car-form .my-car-location-picker legend { font-size: 14px; }
+.my-cars-page .my-car-form .my-car-location-picker > p {
+  grid-column: 1 / -1;
+  margin: 0;
+  color: #66756e;
+  font-size: 13px;
+  line-height: 1.5;
+}
+.my-cars-page .my-car-form .my-car-location-picker > label {
+  display: grid;
+  align-content: start;
+  gap: 8px;
+  color: #344a3c;
+  font-size: 14px;
+  font-weight: 700;
+}
+.my-cars-page .my-car-feature-picker legend span { color: #687970; font-weight: 600; }
+@media (max-width: 580px) {
+  .my-cars-page .my-car-form .my-car-location-picker { grid-template-columns: 1fr; }
+  .my-cars-page .my-car-form .my-car-location-picker > p { grid-column: auto; }
+}
+
+/* Give the feature management section the same clear hierarchy as admin modules. */
+.my-car-management-tabs button { font-size: 15px; }
+.my-car-management-tabs button.is-active { font-size: 16px; font-weight: 800; }
+.my-car-management-panel { padding: 28px 30px 32px; }
+.my-car-management-intro h3 { color: #243a2e; font-size: 23px; font-weight: 800; letter-spacing: -.35px; }
+.my-car-management-intro p { font-size: 14px; line-height: 1.5; }
+.my-car-management-intro > span { padding: 8px 12px; font-size: 13px; }
+.my-car-managed-list label { padding: 14px; font-size: 15px; }
+.my-car-managed-list input { width: 17px; height: 17px; }
+.my-car-managed-list label small { font-size: 12px; }
+.my-car-management-add h4 { color: #304b3a; font-size: 18px; font-weight: 800; }
+.my-car-management-empty, .my-car-management-add > p { font-size: 14px; line-height: 1.5; }
+@media (max-width: 580px) {
+  .my-car-management-panel { padding: 20px 16px 24px; }
+  .my-car-management-intro h3 { font-size: 20px; }
+  .my-car-managed-list label { padding: 11px; font-size: 14px; }
+}
