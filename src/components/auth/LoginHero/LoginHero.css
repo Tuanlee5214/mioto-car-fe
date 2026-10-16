@@ -1,0 +1,47 @@
+.login-hero {
+  position: relative;
+  background:
+    linear-gradient(135deg, rgba(18, 24, 40, 0.72), rgba(22, 101, 52, 0.38)),
+    url('https://images.unsplash.com/photo-1492144534655-ae79c964c9d7?auto=format&fit=crop&w=1200&q=80')
+      center/cover no-repeat;
+}
+
+.login-hero__overlay {
+  display: flex;
+  align-items: flex-end;
+  justify-content: flex-start;
+  min-height: 100%;
+  padding: 72px 64px;
+}
+
+.brand-block {
+  max-width: 420px;
+  color: #ffffff;
+}
+
+.brand-tag {
+  display: inline-flex;
+  align-items: center;
+  padding: 8px 14px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.12);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  font-size: 0.8rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  font-weight: 600;
+}
+
+.brand-block h1 {
+  margin: 20px 0 12px;
+  color: #ffffff;
+  font-size: clamp(2.5rem, 4vw, 4rem);
+  line-height: 1.1;
+  letter-spacing: -0.06em;
+}
+
+.brand-block p {
+  max-width: 380px;
+  color: rgba(255, 255, 255, 0.86);
+  font-size: 1.05rem;
+}

@@ -1,0 +1,108 @@
+.car-brand-select {
+  position: relative;
+  min-width: 0;
+}
+
+.car-brand-select__trigger {
+  width: 100%;
+  min-width: 0;
+  height: 50px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  box-sizing: border-box;
+  border: 1px solid #d6e2da;
+  border-radius: 12px;
+  padding: 0 12px;
+  color: #30473a;
+  background: #fff;
+  font: inherit;
+  font-size: 14px;
+  font-weight: 550;
+  text-align: left;
+  box-shadow: 0 2px 4px rgba(28, 55, 39, 0.035), inset 0 1px #fff;
+  cursor: pointer;
+}
+
+.car-brand-select__trigger:hover,
+.car-brand-select__trigger[aria-expanded="true"] {
+  border-color: #a9cdb7;
+}
+
+.car-brand-select__trigger:focus-visible {
+  border-color: #07845e;
+  outline: 0;
+  box-shadow: 0 0 0 3px rgba(10, 156, 112, 0.09), inset 0 0 0 1px rgba(10, 156, 112, 0.04);
+}
+
+.car-brand-select__selected-label,
+.car-brand-select__option > span:last-child {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.car-brand-select__chevron {
+  width: 20px;
+  height: 20px;
+  flex: 0 0 20px;
+  margin-left: auto;
+  fill: none;
+  stroke: #087857;
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.car-brand-select__options {
+  position: absolute;
+  z-index: 30;
+  top: calc(100% + 6px);
+  right: 0;
+  left: 0;
+  max-height: 260px;
+  overflow-y: auto;
+  border: 1px solid #dce8e0;
+  border-radius: 12px;
+  padding: 5px;
+  background: #fff;
+  box-shadow: 0 12px 28px rgba(25, 58, 42, 0.16);
+}
+
+.car-brand-select__option {
+  width: 100%;
+  min-width: 0;
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  border: 0;
+  border-radius: 8px;
+  padding: 5px 9px;
+  color: #405248;
+  background: transparent;
+  font: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  text-align: left;
+  cursor: pointer;
+}
+
+.car-brand-select__option:hover,
+.car-brand-select__option:focus-visible,
+.car-brand-select__option.is-selected {
+  outline: 0;
+  color: #075c43;
+  background: #eaf6ef;
+}
+
+.car-brand-select__all-icon {
+  width: 46px;
+  height: 34px;
+  flex: 0 0 46px;
+  display: grid;
+  place-items: center;
+  color: #07845e;
+  font-size: 20px;
+}
