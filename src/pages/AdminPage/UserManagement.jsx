@@ -14,6 +14,12 @@ function getInitials(name) {
   return words.length > 1 ? `${words[0][0]}${words[words.length - 1][0]}`.toUpperCase() : (words[0]?.slice(0, 2) || 'U').toUpperCase()
 }
 
+function UserContactIcon({ type }) {
+  return type === 'phone'
+    ? <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7.2 3.8h2.5l1.2 4.1-1.7 1.7a14.4 14.4 0 0 0 5.2 5.2l1.7-1.7 4.1 1.2v2.5a2 2 0 0 1-2.2 2A15.8 15.8 0 0 1 5.2 6a2 2 0 0 1 2-2.2Z" /></svg>
+    : <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3.5" y="5" width="17" height="14" rx="2" /><path d="m4.5 7 7.5 6 7.5-6" /></svg>
+}
+
 function UserManagement({ canViewRoles, canAssignRoles, readPermissionDisplayName, loggedInUserId, onRefreshPermissions }) {
   const [users, setUsers] = useState([])
   const [loading, setLoading] = useState(true)
@@ -128,7 +134,7 @@ function UserManagement({ canViewRoles, canAssignRoles, readPermissionDisplayNam
                 <span className="admin-user-card__top"><span className="admin-user-profile-card__avatar" aria-hidden="true">{user.imageUrl && <img src={user.imageUrl} alt="" onError={(event) => { event.currentTarget.hidden = true; event.currentTarget.nextElementSibling.hidden = false }} />}<span hidden={Boolean(user.imageUrl)}>{getInitials(user.displayName)}</span></span><span className={`admin-user-status admin-user-status--${status.className}`}>{status.label}</span></span>
                 <span className="admin-user-card__name">{user.displayName || 'Chưa có tên'}</span>
                 <span className="admin-user-card__id">USER #{user.userId ?? '—'}</span>
-                <span className="admin-user-card__contact"><span><i aria-hidden="true">☎</i>{user.phone || 'Chưa có số điện thoại'}</span><span><i aria-hidden="true">✉</i>{user.email || 'Chưa có email'}</span></span>
+                <span className="admin-user-card__contact"><span><UserContactIcon type="phone" />{user.phone || 'Chưa có số điện thoại'}</span><span><UserContactIcon type="email" />{user.email || 'Chưa có email'}</span></span>
                 <span className="admin-user-card__footer">Xem hồ sơ <b aria-hidden="true">→</b></span>
               </button>
             })}</div> : <div className="admin-user-empty-filter">Không tìm thấy user phù hợp với bộ lọc.</div>}

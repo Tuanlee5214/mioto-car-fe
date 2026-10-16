@@ -560,7 +560,10 @@ function HomePage({ initialAuthPanel = '', adminLogin = false, onAdminLoginSucce
   const selectedPickerDate = datePicker ? searchForm[`${datePicker}Date`] : ''
 
   const userName = currentUser?.displayName || currentUser?.name || 'Tài khoản'
-  const userAvatar = currentUser?.avatarUrl || currentUser?.avatar || currentUser?.imageUrl
+  const userAvatar = currentUser?.avatarUrl
+    || currentUser?.avatar
+    || currentUser?.imageUrl
+    || (currentUser?.publicId ? buildApiUrl(`/images/profiles/${encodeURIComponent(currentUser.publicId)}`) : '')
   const avatarLetter = userName.trim().charAt(0).toUpperCase() || 'U'
 
   return (
@@ -586,7 +589,7 @@ function HomePage({ initialAuthPanel = '', adminLogin = false, onAdminLoginSucce
                 }}
               >
                 {userAvatar
-                  ? <img className="account-avatar" src={userAvatar} alt="" />
+                  ? <span className="account-avatar account-avatar--image"><img src={userAvatar} alt="" onError={(event) => { event.currentTarget.hidden = true; event.currentTarget.nextElementSibling.hidden = false }} /><span className="account-avatar account-avatar--letter" hidden>{avatarLetter}</span></span>
                   : <span className="account-avatar account-avatar--letter">{avatarLetter}</span>}
                 <span className="account-name">{userName}</span>
               </button>

@@ -66,6 +66,24 @@
   gap: 10px;
 }
 
+.admin-topbar__profile {
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  border: 1px solid transparent;
+  border-radius: 12px;
+  padding: 5px 9px 5px 5px;
+  color: inherit;
+  text-decoration: none;
+  transition: border-color .16s ease, background .16s ease;
+}
+
+.admin-topbar__profile:hover {
+  border-color: #e3eee7;
+  background: #f7fbf8;
+}
+
 .admin-user-avatar {
   width: 44px;
   height: 44px;
@@ -98,6 +116,21 @@
 .admin-user-details span {
   color: #89958f;
   font-size: 14px;
+}
+
+.admin-topbar__profile-hint {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  margin-left: 2px;
+  color: #087b59;
+  font-size: 12px;
+  font-weight: 750;
+  white-space: nowrap;
+}
+
+.admin-topbar__profile-hint b {
+  font-size: 15px;
 }
 
 .admin-back-link {
@@ -2475,6 +2508,16 @@
   }
 
   .admin-user-details {
+    display: grid;
+  }
+
+  .admin-user-details strong {
+    max-width: 118px;
+    font-size: 13px;
+  }
+
+  .admin-user-details > span,
+  .admin-topbar__profile-hint {
     display: none;
   }
 
@@ -2589,6 +2632,14 @@
   .admin-refresh span {
     font-size: 18px;
   }
+}
+
+@media (max-width: 480px) {
+  .admin-topbar__account { gap: 5px; }
+  .admin-topbar__profile { gap: 7px; padding-right: 4px; }
+  .admin-user-details strong { max-width: 86px; font-size: 12px; }
+  .admin-user-avatar { width: 36px; height: 36px; flex-basis: 36px; }
+  .admin-back-link { margin-left: 0; padding-left: 8px; font-size: 12px; }
 }
 
 .admin-app .admin-sidebar__intro > span,
@@ -2789,9 +2840,55 @@
   display: none;
 }
 
+.admin-user-manager .admin-brand-manager__heading h2 {
+  color: #1f382a;
+  font-size: 30px;
+  font-weight: 850;
+  letter-spacing: -.7px;
+}
+
+.admin-user-manager .admin-brand-manager__heading p {
+  color: #53675b;
+  font-size: 15px;
+  line-height: 1.55;
+}
+
+.admin-user-manager .admin-user-overview strong {
+  color: #08744f;
+  font-size: 23px;
+  font-weight: 850;
+}
+
+.admin-user-manager .admin-user-overview small {
+  color: #53675b;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.admin-user-manager .admin-user-list-search {
+  min-height: 46px;
+}
+
+.admin-user-manager .admin-user-list-search input {
+  color: #263a2e;
+  font-size: 15px;
+}
+
+.admin-user-manager .admin-user-filter {
+  min-height: 38px;
+  padding-inline: 13px;
+  color: #52675b;
+  font-size: 14px;
+}
+
+.admin-user-manager .admin-user-filter--active {
+  color: #066e4a;
+  font-weight: 800;
+}
+
 .admin-user-manager .admin-user-grid {
   grid-template-columns: repeat(auto-fit, minmax(min(100%, 390px), 1fr));
-  gap: 12px;
+  gap: 14px;
   padding: 2px;
 }
 
@@ -2802,7 +2899,7 @@
   row-gap: 5px;
   border: 1px solid #e7eee9;
   border-radius: 15px;
-  padding: 15px;
+  padding: 17px;
   background: linear-gradient(145deg, #fff, #fbfdfb);
   box-shadow: 0 5px 16px rgb(31 67 46 / 4%);
 }
@@ -2825,14 +2922,17 @@
 
 .admin-user-manager .admin-user-card__name {
   align-self: end;
-  color: #263b30;
-  font-size: 15px;
+  color: #203a2b;
+  font-size: 18px;
+  font-weight: 800;
+  letter-spacing: -.2px;
 }
 
 .admin-user-manager .admin-user-card__id {
   align-self: start;
-  color: #728178;
-  font-size: 11px;
+  color: #53675b;
+  font-size: 12px;
+  font-weight: 750;
 }
 
 .admin-user-manager .admin-user-card__top > .admin-user-status {
@@ -2844,17 +2944,40 @@
 .admin-user-manager .admin-user-card__contact {
   grid-column: 2 / 3;
   grid-row: 3;
-  gap: 5px;
-  color: #65766c;
-  font-size: 12px;
+  gap: 7px;
+  color: #40564a;
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 1.5;
+}
+
+.admin-user-manager .admin-user-card__contact > span {
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.admin-user-manager .admin-user-card__contact svg {
+  width: 17px;
+  height: 17px;
+  flex: 0 0 17px;
+  fill: none;
+  stroke: #087b59;
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
 }
 
 .admin-user-manager .admin-user-card__footer {
   grid-column: 3;
   grid-row: 3;
   align-self: end;
-  color: #087b59;
-  font-size: 12px;
+  color: #066e4a;
+  font-size: 14px;
+  font-weight: 800;
 }
 
 .admin-user-detail-page {
@@ -2922,16 +3045,17 @@
 
 .admin-user-profile-card__copy .admin-module-card__eyebrow {
   color: #13845c;
-  font-size: 11px;
-  letter-spacing: 1.2px;
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 1.35px;
 }
 
 .admin-user-profile-card__copy h2 {
-  margin: 7px 0 10px;
+  margin: 8px 0 13px;
   color: #20382b;
-  font-size: clamp(23px, 3vw, 30px);
+  font-size: clamp(27px, 3.2vw, 34px);
   font-weight: 800;
-  letter-spacing: -.7px;
+  letter-spacing: -.85px;
 }
 
 .admin-user-profile-card__meta {
@@ -2947,10 +3071,10 @@
   border: 1px solid #e1ece5;
   border-radius: 999px;
   padding: 0 10px;
-  color: #53695c;
+  color: #344f40;
   background: rgb(255 255 255 / 78%);
-  font-size: 12px;
-  font-weight: 650;
+  font-size: 14px;
+  font-weight: 700;
 }
 
 .admin-user-profile-card > .admin-user-status {
@@ -2988,12 +3112,13 @@
 
 .admin-user-panel__heading h3 {
   color: #263d30;
-  font-size: 17px;
+  font-size: 19px;
   font-weight: 800;
 }
 
 .admin-user-panel__heading p {
-  font-size: 12px;
+  color: #566b5e;
+  font-size: 14px;
 }
 
 .admin-user-panel .admin-user-fields {
@@ -3008,15 +3133,18 @@
 }
 
 .admin-user-panel .admin-user-fields dt {
-  color: #718178;
-  font-size: 11px;
+  color: #52685b;
+  font-size: 13px;
+  font-weight: 750;
   letter-spacing: .35px;
   text-transform: uppercase;
 }
 
 .admin-user-panel .admin-user-fields dd {
-  color: #2b4034;
-  font-size: 13px;
+  color: #20392b;
+  font-size: 16px;
+  font-weight: 750;
+  line-height: 1.45;
 }
 
 .admin-user-panel .admin-user-status {
@@ -3037,7 +3165,7 @@
 .admin-user-current-roles h4,
 .admin-user-assign-heading h4 {
   color: #2b4034;
-  font-size: 14px;
+  font-size: 16px;
   font-weight: 800;
 }
 
@@ -3053,6 +3181,21 @@
   background: #fbfdfb;
 }
 
+.admin-user-panel .admin-user-muted,
+.admin-user-panel .admin-user-feedback,
+.admin-user-panel .admin-user-delete-hint,
+.admin-user-panel .admin-user-assign-heading > span {
+  font-size: 14px;
+  line-height: 1.55;
+}
+
+.admin-user-panel .admin-user-role-card strong,
+.admin-user-panel .admin-user-role-option strong {
+  color: #293f32;
+  font-size: 15px;
+  font-weight: 700;
+}
+
 @media (max-width: 850px) {
   .admin-user-detail-grid {
     grid-template-columns: minmax(0, 1fr);
@@ -3060,6 +3203,14 @@
 }
 
 @media (max-width: 560px) {
+  .admin-user-manager .admin-brand-manager__heading h2 {
+    font-size: 27px;
+  }
+
+  .admin-user-manager .admin-brand-manager__heading p {
+    font-size: 14px;
+  }
+
   .admin-user-manager .admin-user-grid {
     grid-template-columns: minmax(0, 1fr);
   }
@@ -3069,6 +3220,14 @@
     grid-template-rows: 22px 22px auto auto auto;
     column-gap: 10px;
     padding: 13px 10px;
+  }
+
+  .admin-user-manager .admin-user-card__name {
+    font-size: 16px;
+  }
+
+  .admin-user-manager .admin-user-card__contact {
+    font-size: 13px;
   }
 
   .admin-user-manager .admin-user-profile-card__avatar {
@@ -3111,7 +3270,7 @@
   }
 
   .admin-user-profile-card__meta span {
-    font-size: 11px;
+    font-size: 12px;
   }
 
   .admin-user-panel {
@@ -3120,5 +3279,13 @@
 
   .admin-user-panel .admin-user-fields {
     grid-template-columns: minmax(0, 1fr);
+  }
+
+  .admin-user-panel .admin-user-fields dt {
+    font-size: 12px;
+  }
+
+  .admin-user-panel .admin-user-fields dd {
+    font-size: 15px;
   }
 }

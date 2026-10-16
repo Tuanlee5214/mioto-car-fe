@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
+import { buildApiUrl } from '../../constants/api'
 import { checkAuth } from '../../services/authService'
 import HomePage from '../HomePage/HomePage'
 import CarManagement from './CarManagement'
@@ -141,6 +142,12 @@ function AdminPage() {
     setAuthState((current) => ({ ...current, loading: true }))
     setReloadKey((key) => key + 1)
   }
+  const adminName = authState.user.displayName || authState.user.name || 'Tài khoản'
+  const adminAvatar = authState.user.avatarUrl
+    || authState.user.avatar
+    || authState.user.imageUrl
+    || (authState.user.publicId ? buildApiUrl(`/images/profiles/${encodeURIComponent(authState.user.publicId)}`) : '')
+  const adminInitial = adminName.trim().charAt(0).toUpperCase() || 'A'
 
   return (
     <div className="admin-app">
@@ -158,13 +165,14 @@ function AdminPage() {
           <span>mioto <small>ADMIN</small></span>
         </Link>
         <div className="admin-topbar__account">
-          <div className="admin-user-avatar" aria-hidden="true">
-            {(authState.user.displayName || authState.user.name || 'A').trim().charAt(0).toUpperCase()}
-          </div>
-          <div className="admin-user-details">
-            <strong>{authState.user.displayName || authState.user.name || 'Tài khoản'}</strong>
-            <span>{authState.user.email || authState.user.phone || 'Quản trị viên'}</span>
-          </div>
+          <Link className="admin-topbar__profile" to="/profile" aria-label={`Mở hồ sơ ${adminName}`}>
+            <span className="admin-user-avatar" aria-hidden="true">{adminAvatar && <img src={adminAvatar} alt="" onError={(event) => { event.currentTarget.hidden = true; event.currentTarget.nextElementSibling.hidden = false }} />}<span hidden={Boolean(adminAvatar)}>{adminInitial}</span></span>
+            <span className="admin-user-details">
+              <strong>{adminName}</strong>
+              <span>{authState.user.email || authState.user.phone || 'Quản trị viên'}</span>
+            </span>
+            <span className="admin-topbar__profile-hint">Hồ sơ <b aria-hidden="true">↗</b></span>
+          </Link>
           <Link className="admin-back-link" to="/">Trang đặt xe <span aria-hidden="true">↗</span></Link>
         </div>
       </header>
