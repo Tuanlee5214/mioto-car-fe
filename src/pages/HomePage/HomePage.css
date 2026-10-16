@@ -853,7 +853,25 @@
 .featured-car-card .car-card__type { margin-bottom: 8px; font-size: 13px; }
 .featured-car-card h3 { min-height: 48px; font-size: 17px; }
 .featured-car-card .car-card__location { font-size: 13px; }
-.featured-car-card .car-card__rating { font-size: 13px; }
+.featured-car-card .car-card__vehicle-meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px 10px;
+  margin-top: 12px;
+}
+.featured-car-card .car-card__spec {
+  color: #a66b06;
+  font-size: 12px;
+  font-weight: 650;
+  line-height: 1.4;
+}
+.featured-car-card .car-card__rating { font-size: 12px; }
+.featured-car-card .car-card__bottom {
+  justify-content: flex-start;
+  margin-top: 11px;
+  padding-top: 11px;
+}
 .featured-car-card .car-card__price { font-size: 16px; }
 .featured-car-card .car-card__price small { font-size: 12px; }
 .featured-car-card__placeholder {

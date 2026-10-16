@@ -904,8 +904,16 @@ function HomePage({ initialAuthPanel = '', adminLogin = false, onAdminLoginSucce
                 <div className="car-card__type">{car.carBrand?.nameBrand ?? car.brandName ?? car.brand?.name ?? ''}{car.productionYear ? ` · ${car.productionYear}` : ''}</div>
                 <h3>{name}</h3>
                 <div className="car-card__location"><span aria-hidden="true">⌖</span> {location || 'Chưa cập nhật địa điểm'}</div>
+                <div className="car-card__vehicle-meta">
+                  <span className="car-card__spec">{featuredCarTransmission(car)}</span>
+                  <span className="car-card__spec">{featuredCarFuel(car)}</span>
+                  {Number.isFinite(rating) && rating > 0 && (
+                    <span className="car-card__rating">
+                      ★ {rating.toFixed(1)}{ratingCount > 0 && <span> ({ratingCount})</span>}
+                    </span>
+                  )}
+                </div>
                 <div className="car-card__bottom">
-                  <span className="car-card__rating">{Number.isFinite(rating) && rating > 0 ? <>★ {rating.toFixed(1)} <span>{ratingCount > 0 ? `(${ratingCount} đánh giá)` : ''}</span></> : `${featuredCarTransmission(car)} · ${featuredCarFuel(car)}`}</span>
                   <span className="car-card__price">{Number(car.pricePerDay || 0).toLocaleString('vi-VN')}đ <small>/ ngày</small></span>
                 </div>
               </div>
