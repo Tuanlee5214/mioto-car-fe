@@ -203,6 +203,14 @@ function CarManagement({ canWrite, onRefreshPermissions }) {
   const [carImageIndexes, setCarImageIndexes] = useState({})
   const [notification, setNotification] = useState(null)
   const [filtersOpen, setFiltersOpen] = useState(false)
+  const appliedFilterCount = Object.keys(appliedFilters).length
+  const detailFeatureItems = detailState?.car ? getCarFeatureItems(detailState.car) : []
+  const detailCarStatus = detailState?.car ? getStatus(detailState.car) : null
+  const detailOwnerId = getOwnerId(detailState?.car)
+  const statusDialogStatus = statusCar ? getStatus(statusCar) : null
+  const statusDialogChoices = statusDialogStatus
+    ? getAllowedStatusChanges(statusDialogStatus.value)
+    : []
   const listEndRef = useRef(null)
   const listScrollRef = useRef(null)
   const loadingRef = useRef(false)
@@ -445,12 +453,36 @@ function CarManagement({ canWrite, onRefreshPermissions }) {
           <p>Lọc, theo dõi và cập nhật trạng thái xe trong hệ thống.</p>
         </div>
         <div className="admin-car-manager__tools">
-          <button className="admin-car-filter-toggle" type="button" aria-expanded={filtersOpen} aria-controls="admin-car-filter-panel" onClick={() => setFiltersOpen((open) => !open)}>
-            <span aria-hidden="true">☷</span> Bộ lọc {Object.keys(appliedFilters).length > 0 && <b>{Object.keys(appliedFilters).length}</b>}
+          <button
+            className="admin-car-filter-toggle"
+            type="button"
+            aria-expanded={filtersOpen}
+            aria-controls="admin-car-filter-panel"
+            onClick={() => setFiltersOpen((open) => !open)}
+          >
+            <span aria-hidden="true">☷</span> Bộ lọc {appliedFilterCount > 0 && <b>{appliedFilterCount}</b>}
           </button>
-          <button className="admin-car-search" type="button" onClick={() => applyFilters()}>Tìm kiếm</button>
-          <button className="admin-car-refresh" type="button" onClick={() => setReloadKey((key) => key + 1)}>↻ Tải lại</button>
-          <button className="admin-refresh" type="button" onClick={onRefreshPermissions}><span aria-hidden="true">↻</span> Làm mới quyền</button>
+          <button
+            className="admin-car-search"
+            type="button"
+            onClick={() => applyFilters()}
+          >
+            Tìm kiếm
+          </button>
+          <button
+            className="admin-car-refresh"
+            type="button"
+            onClick={() => setReloadKey((key) => key + 1)}
+          >
+            ↻ Tải lại
+          </button>
+          <button
+            className="admin-refresh"
+            type="button"
+            onClick={onRefreshPermissions}
+          >
+            <span aria-hidden="true">↻</span> Làm mới quyền
+          </button>
         </div>
       </div>
 
@@ -469,7 +501,7 @@ function CarManagement({ canWrite, onRefreshPermissions }) {
             <strong>Bộ lọc danh sách</strong>
             <small>Lọc xe theo trạng thái và thông số kỹ thuật</small>
           </div>
-          <span className="admin-car-filters__count">{Object.keys(appliedFilters).length} điều kiện đang áp dụng</span>
+          <span className="admin-car-filters__count">{appliedFilterCount} điều kiện đang áp dụng</span>
         </div>
         <label>
           <span>Trạng thái</span>
@@ -566,6 +598,9 @@ function CarManagement({ canWrite, onRefreshPermissions }) {
               const id = getCarId(car)
               const status = getStatus(car)
               const images = getCarImageUrls(car)
+              const ownerId = getOwnerId(car)
+              const canOpenOwnerProfile = ownerId != null
+              const canChangeStatus = getAllowedStatusChanges(status.value).length > 0
               const imageIndex = (carImageIndexes[id] || 0) % Math.max(images.length, 1)
               const carName = car?.carName ?? car?.nameCar ?? car?.modelName ?? car?.name ?? `Xe #${id ?? index + 1}`
               const changeImage = (event, direction) => {
@@ -601,9 +636,20 @@ function CarManagement({ canWrite, onRefreshPermissions }) {
                       <span><b aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 3c2.2 3.2 5.5 6.7 5.5 11a5.5 5.5 0 0 1-11 0C6.5 9.7 9.8 6.2 12 3Z"/><path d="M9.5 15.5a2.5 2.5 0 0 0 2.5 2.5"/></svg></b>{getEnumLabel(car?.typeFuel, FUELS)}</span>
                     </div>
                     <div className="admin-car-card__location"><span aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M19 10c0 5-7 11-7 11S5 15 5 10a7 7 0 1 1 14 0Z"/><circle cx="12" cy="10" r="2.2"/></svg></span>{[car?.district?.name ?? car?.districtName, car?.province?.name ?? car?.provinceName].filter(Boolean).join(', ') || 'Chưa cập nhật địa điểm'}</div>
-                    {(car?.ownerName || getOwnerId(car) != null) && <button type="button" className="admin-car-card__owner" disabled={getOwnerId(car) == null} onClick={() => setOwnerProfileId(getOwnerId(car))}><span aria-hidden="true"><DetailIcon type="user" /></span><small>Chủ xe</small><strong>{car.ownerName || `User #${getOwnerId(car)}`}</strong></button>}
+                    {(car?.ownerName || canOpenOwnerProfile) && (
+                      <button
+                        type="button"
+                        className="admin-car-card__owner"
+                        disabled={!canOpenOwnerProfile}
+                        onClick={() => setOwnerProfileId(ownerId)}
+                      >
+                        <span aria-hidden="true"><DetailIcon type="user" /></span>
+                        <small>Chủ xe</small>
+                        <strong>{car.ownerName || `User #${ownerId}`}</strong>
+                      </button>
+                    )}
                     {canWrite && <div className="admin-car-card__actions">
-                      <button className="admin-car-status-button" type="button" disabled={!getAllowedStatusChanges(status.value).length} onClick={() => openStatusEditor(car)}>
+                      <button className="admin-car-status-button" type="button" disabled={!canChangeStatus} onClick={() => openStatusEditor(car)}>
                         <span aria-hidden="true">↻</span> Đổi trạng thái
                       </button>
                     </div>}
@@ -629,17 +675,33 @@ function CarManagement({ canWrite, onRefreshPermissions }) {
             <div className="admin-brand-modal__heading">
               <div>
                 <span className="admin-module-card__eyebrow">CẬP NHẬT TRẠNG THÁI</span>
-                <h2 id="car-status-title">{getStatus(statusCar).value === 2 ? 'Duyệt hoặc khóa xe' : 'Đổi trạng thái xe'}</h2>
+                <h2 id="car-status-title">{statusDialogStatus.value === 2 ? 'Duyệt hoặc khóa xe' : 'Đổi trạng thái xe'}</h2>
               </div>
-              <button type="button" aria-label="Đóng" disabled={statusSaving} onClick={() => setStatusCar(null)}>×</button>
+              <button
+                type="button"
+                aria-label="Đóng"
+                disabled={statusSaving}
+                onClick={() => setStatusCar(null)}
+              >
+                ×
+              </button>
             </div>
             <p className="admin-car-status-modal__car">{statusCar?.nameCar ?? statusCar?.carName ?? statusCar?.modelName ?? `Xe #${getCarId(statusCar)}`}</p>
             <form onSubmit={saveStatus}>
               <div className="admin-car-status-options">
-                {getAllowedStatusChanges(getStatus(statusCar).value).map((status) => (
+                {statusDialogChoices.map((status) => (
                   <label key={status.value} className={`admin-car-status-option admin-car-status-option--${status.className}`}>
-                    <input type="radio" name="status" value={status.value} checked={selectedStatus === status.value} onChange={() => setSelectedStatus(status.value)} />
-                    <span><i />{status.label}</span>
+                    <input
+                      type="radio"
+                      name="status"
+                      value={status.value}
+                      checked={selectedStatus === status.value}
+                      onChange={() => setSelectedStatus(status.value)}
+                    />
+                    <span>
+                      <i />
+                      {status.label}
+                    </span>
                     <small>{status.value === 1 ? 'Cho phép xe xuất hiện và được đặt.' : status.value === 2 ? 'Đưa xe về danh sách chờ duyệt.' : 'Ẩn xe khỏi hoạt động cho đến khi mở khóa.'}</small>
                   </label>
                 ))}
@@ -663,9 +725,20 @@ function CarManagement({ canWrite, onRefreshPermissions }) {
               <div className="admin-car-detail__header-copy">
                 <span className="admin-module-card__eyebrow">HỒ SƠ XE #{getCarId(detailState.car) ?? ''}</span>
                 <h2 id="admin-car-detail-title">{detailState.car?.carName || 'Chi tiết xe'}</h2>
-                {detailState.car && <span className={`admin-car-status admin-car-status--${getStatus(detailState.car).className}`}>{getStatus(detailState.car).label}</span>}
+                {detailState.car && (
+                  <span className={`admin-car-status admin-car-status--${detailCarStatus.className}`}>
+                    {detailCarStatus.label}
+                  </span>
+                )}
               </div>
-              <button type="button" className="admin-car-detail__close" aria-label="Đóng" onClick={() => setDetailState(null)}>×</button>
+              <button
+                type="button"
+                className="admin-car-detail__close"
+                aria-label="Đóng"
+                onClick={() => setDetailState(null)}
+              >
+                ×
+              </button>
             </header>
 
             {detailState.loading ? (
@@ -699,15 +772,35 @@ function CarManagement({ canWrite, onRefreshPermissions }) {
                   <div><span><DetailIcon type="fuel" />Mức tiêu hao</span><strong>{detailState.car.fuelConsumption ? `${detailState.car.fuelConsumption} / 100km` : '—'}</strong></div>
                   <div><span><DetailIcon type="price" />Giá thuê mỗi ngày</span><strong>{formatPrice(detailState.car.pricePerDay)}</strong></div>
                   <div><span><DetailIcon type="location" />Địa điểm</span><strong>{[detailState.car.districtName, detailState.car.provinceName].filter(Boolean).join(', ') || '—'}</strong></div>
-                  <div><span><DetailIcon type="user" />Chủ xe</span>{getOwnerId(detailState.car) != null
-                    ? <button type="button" className="admin-car-detail__owner-link" onClick={() => setOwnerProfileId(getOwnerId(detailState.car))}>{detailState.car.ownerName || `User #${getOwnerId(detailState.car)}`}</button>
-                    : <strong>{detailState.car.ownerName || '—'}</strong>}</div>
+                  <div>
+                    <span><DetailIcon type="user" />Chủ xe</span>
+                    {detailOwnerId != null
+                      ? (
+                        <button
+                          type="button"
+                          className="admin-car-detail__owner-link"
+                          onClick={() => setOwnerProfileId(detailOwnerId)}
+                        >
+                          {detailState.car.ownerName || `User #${detailOwnerId}`}
+                        </button>
+                      )
+                      : <strong>{detailState.car.ownerName || '—'}</strong>}
+                  </div>
                   <div><span><DetailIcon type="id" />Mã xe</span><strong>{getCarId(detailState.car) ?? '—'}</strong></div>
                 </div>
                 <section className="admin-car-detail__text admin-car-detail__features">
                   <h3><DetailIcon type="features" />Tính năng xe</h3>
-                  {getCarFeatureItems(detailState.car).length
-                    ? <div className="admin-car-feature-list">{getCarFeatureItems(detailState.car).map((feature, index) => <span key={feature.id ?? `${feature.name}-${index}`}><FeatureIcon iconKey={feature.iconKey} />{feature.name}</span>)}</div>
+                  {detailFeatureItems.length
+                    ? (
+                      <div className="admin-car-feature-list">
+                        {detailFeatureItems.map((feature, index) => (
+                          <span key={feature.id ?? `${feature.name}-${index}`}>
+                            <FeatureIcon iconKey={feature.iconKey} />
+                            {feature.name}
+                          </span>
+                        ))}
+                      </div>
+                    )
                     : <p>Chưa cập nhật tính năng xe.</p>}
                 </section>
                 <section className="admin-car-detail__text">
