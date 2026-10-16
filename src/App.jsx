@@ -3,48 +3,11 @@ import { Navigate, Route, Routes, useLocation, useNavigate } from 'react-router-
 import LoginPage from './pages/LoginPage/LoginPage'
 import SignUpPage from './pages/SignUpPage/SignUpPage'
 import HomePage from './pages/HomePage/HomePage'
+import ProfilePage from './pages/ProfilePage/ProfilePage'
+import AdminPage from './pages/AdminPage/AdminPage'
+import MyCarsPage from './pages/MyCarsPage/MyCarsPage'
+import SearchCarsPage from './pages/SearchCarsPage/SearchCarsPage'
 import { checkAuth } from './services/authService'
-
-function RequireAuth({ children }) {
-  const navigate = useNavigate()
-  const location = useLocation()
-  const [ready, setReady] = useState(false)
-  const [authenticated, setAuthenticated] = useState(false)
-
-  useEffect(() => {
-    let mounted = true
-
-    const verify = async () => {
-      const result = await checkAuth()
-      if (!mounted) return
-
-      const nextAuthenticated = Boolean(result.success && result.authenticated)
-      setAuthenticated(nextAuthenticated)
-
-      if (!nextAuthenticated && location.pathname !== '/login' && location.pathname !== '/signup') {
-        navigate('/login', { replace: true })
-      }
-
-      setReady(true)
-    }
-
-    verify()
-
-    return () => {
-      mounted = false
-    }
-  }, [location.pathname, navigate])
-
-  if (!ready) {
-    return <div style={{ display: 'grid', placeItems: 'center', minHeight: '100vh' }}>Đang kiểm tra phiên đăng nhập...</div>
-  }
-
-  if (!authenticated) {
-    return null
-  }
-
-  return children
-}
 
 function PublicRoute({ children, redirectTo = '/home' }) {
   const navigate = useNavigate()
@@ -98,16 +61,13 @@ function App() {
           </PublicRoute>
         }
       />
-      <Route
-        path="/home"
-        element={
-          <RequireAuth>
-            <HomePage />
-          </RequireAuth>
-        }
-      />
-      <Route path="/" element={<Navigate to="/login" replace />} />
-      <Route path="*" element={<Navigate to="/login" replace />} />
+      <Route path="/home" element={<HomePage />} />
+      <Route path="/profile" element={<ProfilePage />} />
+      <Route path="/my-cars" element={<MyCarsPage />} />
+      <Route path="/cars/search" element={<SearchCarsPage />} />
+      <Route path="/admin" element={<AdminPage />} />
+      <Route path="/" element={<HomePage />} />
+      <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
   )
 }
